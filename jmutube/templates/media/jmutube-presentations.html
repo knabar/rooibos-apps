@@ -1,0 +1,75 @@
+{% extends "jmutube-media.html" %}
+{% load tagging_tags %}
+
+{% block mediacontent %}
+
+<style>
+
+.file {
+        background-color: white;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border: thin #dddddd solid;
+        background-color: #F7F7F7;
+        width: 250px;
+        padding: 2px;
+}
+
+.filetitle {
+        font-weight: bold;
+}
+
+.file {
+        margin-top: 3px;
+        margin-bottom: 3px;
+        width: 300px;
+}
+
+#files a:visited {
+        color:#74981C;
+}
+
+#files a+a {
+        border-left: thin lightgrey solid;
+        padding-left: 4px;
+}
+
+#files .filesheader {
+        background-color: #b4d64d;
+        font-weight: bold;
+}
+</style>
+
+<table id="files">
+        <tr class="filesheader">
+                <th><input type="checkbox" name="checkall" id="checkall" /></th>
+                <th>Title</th>
+                <th>Size</th>
+        </tr>
+{% for file in files %}
+        <tr>
+                <td><input type="checkbox" name="file" value="{{ file.id }}" class="filecheck" /></td>
+                <td><div class="file" id="file_{{ file.id }}">
+                        <span class="filetitle" id="title_{{ file.id }}">{{ file.title|escape }}</span></div>
+                        <a href="{% url jmutube-media-delete type, file.id, file.name %}">Delete</a>
+                        <a href="{% url jmutube-media-rename type, file.id, file.name %}">Rename</a>
+                        <a href="{{ file.url }}.content/" target="_blank">Preview</a>
+                        <a href="{{ file.url }}.content/" target="_blank">Link</a>
+                        <a href="{{ file.url }}" target="_blank">Download</a>
+                        <div class="tags-line">
+                        {% tags_for_object file.ownedwrapper as file_tags %}
+                        {% for tag in file_tags %}
+                            {% ifnotequal tag.name "JMUtube" %}
+                            <span class="tag" id="tag-{{ file.id }}-{{ tag.id }}">{{ tag.name }} <a class="removetag" href="javascript:void(0)">X</a></span>
+                            {% endifnotequal %}
+                        {% endfor %}
+                        </div>
+                </td>
+                <td>{{ file.media.file_size|filesizeformat }}</td>
+        </tr>
+{% endfor %}
+</table>
+
+<p>To link to your presentation, right-click on <strong>Link</strong> and choose <strong>Copy Shortcut</strong> or <strong>Copy Link</strong>.</p>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "jmutube-master.html" %}
+
+{% load impersonate_tags %}
+
+{% block content %}
+
+<h3>Options</h3>
+<p>This options page serves as a space to add extra and interesting features to JMUtube. You can think of this sort of like the labs section in Gmail. You will only see features here than apply to you, so you may see nothing at all below. As new features are added, we'll make updates to the front page and the help section so you'll know what's available.
+
+<div class="options_odd">
+    {% impersonation_form %}
+</div>
+{% endblock %}
+

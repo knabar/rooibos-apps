@@ -1,0 +1,253 @@
+body {
+	background-color: white;
+	margin: 0px;
+}
+
+#banner {
+	background-repeat: repeat-x;
+	z-index: -1;
+	left: 0px;
+	background-image: url(../images/banner_background.jpg);
+	width: 100%;
+	height: 240px;
+	top: 0px;
+	position: absolute;
+}
+
+#banner h1 {
+	background-repeat: no-repeat;
+	margin-left: 0px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	background-image: url(../images/logo.jpg);
+	height: 240px;
+	width: 740px;
+	display: block;
+	text-indent: -9999px;
+	z-index: 5;
+}
+#banner h2 {
+	display: none;
+}
+
+#banner a:link {
+	color: #cccccc;
+}
+#banner a:visited {
+	color: #cccccc;
+}
+#banner a:hover {
+	color: white;
+}
+#banner a:active {
+	color: white;
+}
+
+#headerNav h2 a {
+	background-color: inherit;
+	margin-left: 0px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	height: 164px;
+	width: 520px;
+	display: block;
+	text-indent: -9999px;
+}
+#headerNav h3 {
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 0px;
+	right: 40px;
+	width: 186px;
+	height: 27px;
+	margin-top: 0px;
+}
+#headerNav h3 a {
+	text-indent: -9999px;
+	display: block;
+	width: 186px;
+	height: 27px;
+	background-image: url(../images/cit_headerNav_link.jpg);
+	background-repeat: no-repeat;
+}
+#headerNav h3 a:link {
+	width: 186px;
+	height: 27px;
+}
+#headerNav h3 a:visited {
+	width: 186px;
+	height: 27px;
+}
+#headerNav h3 a:hover {
+	width: 186px;
+	height: 27px;
+	background-image: url(../images/cit_headerNav_hover.jpg);
+}
+#headerNav h3 a:active {
+	width: 186px;
+	height: 27px;
+	background-image: url(../images/cit_headerNav_hover.jpg);
+}
+
+#navigation {
+	z-index: 2;
+	left: 0px;
+	top: 125px;
+	height: 20px;
+	width: 100%;
+	position: absolute;
+	text-align: right;
+}
+
+#navigation ul {
+	float: right;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	width: auto;
+	height: 30px;
+	margin-left: auto;
+	margin-right: 50px;
+	border: none;
+}
+
+#navigation li:first-child {
+	border-left: none;
+}
+
+#navigation li {
+	color: black;
+	font-weight: bold;
+	border-left-width: 1px;
+	border-left-color: black;
+	border-left-style: solid;
+	text-align: center;	
+	padding: 0px 10px 0px 10px;
+	float: left;
+	display: block;
+	margin-top: 10px;
+}
+
+#navigation a {
+	color: black;
+}
+#navigation a:link {
+}
+#navigation a:visited {
+}
+#navigation a:hover {
+	color: #353a3d;
+}
+#navigation a:active {
+	color: #666666;
+}
+#sidebar {
+	border-left-width: thin;
+	border-left-style: solid;
+	border-left-color: #74981c;
+	position: absolute;
+	width: 15em;
+	top: 225px;
+	right: 40px;
+	z-index: 5;
+	padding-left: 20px;
+	text-align: justify;
+}
+#sidebar a:link {
+	text-decoration: underline;
+	color: #6e9218;
+}
+#sidebar a:visited {
+	text-decoration: underline;
+	color: #6e9218;
+}
+#sidebar a:hover {
+	color: black;
+}
+#sidebar a:active {
+	color: #cccccc;
+}
+#sidebar h4:first-child  {
+	margin-top: 0px;
+}
+#sidebar h4 {
+	font-weight: bold;
+	color: #74981c;
+	font-size: 1.5em;
+	margin-bottom: 0px;
+	margin-top: 15px;
+}
+#sidebar h4 span {
+	color: #000000;
+}
+#sidebar h6{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+#sidebar h6 span {
+	font-weight: normal;
+}
+#sidebar  p  {
+	margin-bottom: 5px;
+}
+#sidebar img {
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+}
+#sidebar .vcard {
+	text-align: left;
+}
+#main {
+	margin-right: 22em;
+	padding-top: 20px;
+	z-index: 6;
+	margin-left: 150px;
+	min-width: 350px;
+	max-width: 900px;
+}
+#main a:link {
+	text-decoration: underline;
+	color: #6e9218;
+}
+#main a:visited {
+	text-decoration: underline;
+	color: #b4d64d;
+}
+#main a:hover {
+	color: black;
+}
+#main a:active {
+	color: #cccccc;
+}
+
+#main h3 {
+	font-weight: bold;
+	color: #74981c;
+	font-size: 1.5em;
+	margin-bottom: 0px;
+}
+#main h3 span {
+	color: #000000;
+}
+
+
+#main ul#mediaTypes {
+	margin-bottom: 0px;
+	margin-top: 0px;
+	width: 250px;
+	height: 30px;
+	margin-left: auto;
+	margin-right: 50px;
+	border: none;
+}
+
+#main ul#mediaTypes li {
+	border-left-width: 1px;
+	border-left-color: black;
+	border-left-style: solid;
+	text-align: center;
+	width: 24%;
+	margin-top: 7px;
+	float: left;
+	display: block;
+}

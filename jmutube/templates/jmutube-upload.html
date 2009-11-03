@@ -1,0 +1,85 @@
+{% extends "jmutube-master.html" %}
+
+{% block content %}
+
+<ul id="contentTabs">
+    <li><a href="{% url jmutube-media "video" %}">Video</a></li>
+    <li <a href="{% url jmutube-media "audio" %}">Audio</a></li>
+    <li><a href="{% url jmutube-media "presentations" %}">Presentations</a></li>
+    <li class="selectedTab" id="upload"><a href="{% url jmutube-upload %}">Upload</a></li>
+    <li><a href="{% url jmutube-crass-schedules %}">CRASS Agenda</a></li>
+    <li><a href="{% url jmutube-relay %}">Relay</a></li>
+</ul>
+
+<form method="post" action="" enctype="multipart/form-data">
+Upload New {{ uploadform }}
+<div id="upload-progress" class="upload-progress"></div>
+<input type="submit" name="SubmitButton" value="Submit" />
+</form>
+
+<script language="javascript" type="text/javascript">
+
+function gen_uuid() {
+    var uuid = ""
+    for (var i=0; i < 32; i++) {
+        uuid += Math.floor(Math.random() * 16).toString(16);
+    }
+    return uuid
+}
+
+$(function() {
+    $('form[@enctype=multipart/form-data]').submit(function(){
+        if ($.data(this, 'submitted')) return false;
+
+        var freq = 1000; // freqency of update in ms
+        var uuid = gen_uuid(); // id for this upload so we can fetch progress info.
+        var progress_url = '/accounts/media/upload/progress/'; // ajax view serving progress info
+        this.action += (this.action.indexOf('?') == -1 ? '?' : '&') + 'X-Progress-ID=' + uuid;
+
+        var $progress = $('#upload-progress')
+            .append('<div class="progress-container"><div class="progress-bar">&nbsp;</div><div class="progress-info">Uploading</div></div>');
+
+        function update_progress_info() {
+            $progress.show();
+            $.getJSON(progress_url, {'X-Progress-ID': uuid}, function(data, status){
+                var stop = false;
+                if (data) {
+                    var progress = parseInt(data.uploaded) / parseInt(data.length);
+                    var width = $progress.find('.progress-container').width()
+                    stop = progress > 0.95;
+                    var text = stop ? "Finishing, please wait..." : 'Uploading ' + parseInt(progress*100) + '%';
+                    var progress_width = stop ? width : width * progress;
+                    $progress.find('.progress-bar').width(progress_width);
+                    $progress.find('.progress-info').text(text);
+                }
+                if (!stop) window.setTimeout(update_progress_info, freq);
+            });
+        };
+        window.setTimeout(update_progress_info, freq);
+
+        $.data(this, 'submitted', true); // mark form as submitted.
+    });
+});
+</script>
+
+<h4>JMUtube currently supports the following file types:</h4>
+<ul>
+	<li>
+	<strong>Video:</strong>
+	<ul>
+		<li>.mp4 and .mov files using the H.264 and AAC codecs</li>
+		<li>.flv files using the Sorenson Spark or On2 VP6 codec</li>
+	</ul>
+	</li>
+	<li>
+	<strong>Presentations:</strong>
+	<ul>
+		<li>.zip files produced by Camtasia, Adobe Presenter, or Adobe Captivate.</li>
+		<li>Any zipped website with a file called index.html in the root directory.</li>
+	</ul>
+	</li>
+</ul>
+<h5>Tip: You can upload .m4v files by changing the extension to .mp4 before you upload.</h5>
+<p>Have an account at <a href="http://streaming.jmu.edu" target="_blank">http://streaming.jmu.edu</a> already? You can import your Flash files from there using our <a href="{% url jmutube-migrate-files %}">migration tool</a>.</p>
+
+{% endblock %}
