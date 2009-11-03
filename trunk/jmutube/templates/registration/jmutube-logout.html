@@ -1,0 +1,15 @@
+{% extends "jmutube-master.html" %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(window).bind("load", function() {
+    $.cookie('playlist', null, { path: '/' });
+})
+</script>
+{% endblock %}
+
+{% block content %}
+
+You have successfully logged out.
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "jmutube-master.html" %}
+
+{% block content %}
+
+<form method="post" action="">
+
+{{ form }}
+
+<input type="submit" name="SubmitButton" value="Submit" />
+
+<a href="{% url jmutube-media type %}">Cancel</a>
+</form>
+
+{% endblock %}

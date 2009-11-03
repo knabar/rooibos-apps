@@ -1,0 +1,102 @@
+{% extends "jmutube-master.html" %}
+
+{% block sidebar%}
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+    $(window).bind("load", function() {
+
+        $("#checkall").click(function() {
+            $(".filecheck").attr("checked", this.checked);
+        });
+
+        $("#tagfiles").val("");
+
+        $("#tagfiles").change(function() {
+            $("#files").val("");
+            $(".filecheck").each(function(i, c) {
+                if (c.checked) $("#files").val($("#files").val() + "," + c.value);
+            });
+            var tag = $("#tagfiles").val();
+            if ($("#tagfiles").attr("selectedIndex") == 1)
+                tag = prompt("Please enter new tags for the selected files:");
+            if (tag)
+            {
+                $("#tag").val(tag);
+                $("#taggingform").submit();
+            }
+        });
+
+        $("a.removetag").click(function(a,b,c) {
+            var tagnode = this.parentNode;
+            var id = tagnode.id.substring(4, tagnode.id.indexOf('-', 4));
+            var tag = tagnode.id.substring(tagnode.id.indexOf('-', 4) + 1)
+
+            $.ajax({ data: { id: id, tag: tag },
+                dataType: "json",
+                error: function(req, status, error) { alert("Could not remove tag: " + status + " " + error); },
+                success: function(data, status) { $("#" + tagnode.id).remove(); },
+                type: "POST",
+                url: "{% url jmutube-delete-tag user.username %}"
+                });
+        });
+    });
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<ul id="contentTabs">
+    <li {% ifequal type "video" %}class="selectedTab"{% endifequal %}><a href="{% url jmutube-media "video" %}">Video</a></li>
+    <li {% ifequal type "audio" %}class="selectedTab"{% endifequal %}><a href="{% url jmutube-media "audio" %}">Audio</a></li>
+    <li {% ifequal type "presentations" %}class="selectedTab"{% endifequal %}><a href="{% url jmutube-media "presentations" %}">Presentations</a></li>
+    <li id="upload"><a href="{% url jmutube-upload %}">Upload</a></li>
+    <li><a href="{% url jmutube-crass-schedules %}">CRASS Agenda</a></li>
+    <li><a href="{% url jmutube-relay %}">Relay</a></li>
+</ul>
+
+{% if type %}
+<form id="taggingform" method="POST" action="{{ tag_url }}">
+<input type="hidden" name="tag" id="tag" value="" />
+<input type="hidden" name="files" id="files" value="" />
+
+<div style="background-color: #DDDDDD; padding: 5px; margin-bottom: 10px;">
+
+
+    Tag selected files:
+    <select id="tagfiles" name="tagfiles">
+        <option value=""></option>
+        <option>New tag...</option>
+        {% for tag in all_tags %}
+        <option>{{ tag }}</option>
+        {% endfor %}
+    </select>
+
+
+    Show:
+        <span><a href="{% url jmutube-media type %}">All Files</a>&nbsp;&nbsp; </span>
+        {% if selected_tags %}
+        Selected:
+        {% for tag in selected_tags %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+        {% if tags %}
+        Additional tags:
+        {% endif %}
+        {% endif %}
+
+    {% for tag in tags %}
+        <span class="tag"><a href="{{ tag_url }}tag={{ tag|urlencode }}">{{ tag }}</a></span>
+    {% endfor %}
+</div>
+</form>
+{% endif %}
+
+{% block mediacontent %}
+
+{% endblock %}
+
+
+{% endblock %}

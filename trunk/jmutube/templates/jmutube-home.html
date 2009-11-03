@@ -1,0 +1,45 @@
+{% extends "jmutube-master.html" %}
+
+{% block content %}
+
+<h3>Welcome to JMUtube</h3>
+<p>Over on the right, you'll see the main navigation with your options. If you're a faculty or staff member at JMU, you already have an account. Just click on <a href="http://jmutube.cit.jmu.edu/accounts/media/video/">My Files</a> and you'll see any files that have been uploaded to your account, or you can start uploading your own files.</p>
+
+<p>If you run into any trouble and find you need help, you can click on <a href="http://jmutube.cit.jmu.edu/help/">Help</a> or shoot an email to Grover Saunders at <a href="mailto:saundebn@jmu.edu">saundebn@jmu.edu</a>. Enjoy the site.</p>
+
+<h3>YAPANF! &bull; <span>July 21st, 2009</span></h3>
+<br>
+<p>That's "Yet Another Post About New Features!" if you were wondering. We've added a ton of new stuff to JMUtube over the summer, so let's take a look at a few highlights</p>
+
+<ul>
+
+	<li><h4>CRASS Integration</h4><p>If you're using one of the CRASS recorders in Harrison Hall, you can now schedule and claim your recordings with JMUtube instead of the older streaming site. The two will run in parallel for the rest of the summer (if you schedule a recording in both, the older site gets preference). The new scheduler offers a number of small tweaks and improvements, but the the most significant change is the ability to schedule recordings retroactively. So you can make recordings on Tuesday, but then schedule the recordings three days later on Friday when you realize you forgot.</p></li>
+
+	<li><h4>Relay Support</h4><p>Relay is a new software offering that allows you to very easily make live recordings of your classroom lectures and have them appear in JMUtube a few hours later ready to be viewed on the web. <a href="http://cit.jmu.edu" target="_blank">CIT</a> will be offering workshops on Relay in the Fall, but you can get started right now by clicking the Relay tab and downloading the recording software. You will need to email <a href="mailto:saundebn@jmu.edu">saundebn@jmu.edu</a> to get an account before you can log in and upload though.</p></li>
+
+	<li><h4>Improved Tag Sorting</h4>While we introduced tagging back in April, the feature has been refined significantly. Now, when you click on a tag in the tag bar at the top, you'll only see tags which would further refine your selection, similar to a faceted search. We'll be posting a screencast for tagging soon that will go into more detail, but you'll likely get a good feel for it just by playing around for a bit.</li>
+</ul>
+
+<p>As always, we're interested in your feedback, so let us know if you have questions, comments, or suggestions for the future of JMUtube.</p>
+
+
+
+<h3>Tagging, Impersonation, and Org Accounts. Oh My! &bull; <span>April 21st, 2009</span></h3>
+<br>
+<p>Okay, that title is a stretch, but we have indeed added three big new features to JMUTube this week.</p>
+<ul>
+	<li><h4>Tagging</h4><p>You can now add tags to both videos and presentations. You'll notice a new tagging bar at the top of your files list and checkboxes next to each title. Choosing a tag (or new tag) from the drop-down menu will add that tag to any files with a check next to it. You can then use these tags to filter your view, as each tag appears in the "Show Only" list. Clicking on the green underlined SMAD202 in the image below for example would show only titles with the SMAD202 tag.</p><p align="center"><img src="{% url jmutube-static 'images/screenshots/jmutube_tagging.jpg' %}" style="border:solid thin black;" width="464" height="232"/></p></li>
+
+	<li><h4>Impersonation</h4><p>It's common for instructors to have GAs do some of the work within JMUtube, but until now the only way to handle this was to give the GA your e-ID, which you really shouldn't do. So we've added a feature that allows a user to pretend to be you within JMUtube (with your permission of course). You'll need to contact Grover Saunders at <a href="mailto:saundebn@jmu.edu">saundebn@jmu.edu</a> to connect the two accounts, but once your accounts have been configured, the other user can log into JMUtube using their account, click the new Options menu, pick your name out of the list, and start uploading and deploying content from your account.</p><p>It's worth noting that the Options page won't appear unless impersonation has been set up for your account.</p></li>
+
+	<li><h4>Organizational Accounts</h4><p>If you're using JMUtube on behalf of your department, you may be in a situation where you're putting departmental content into a personal account. This could create problems if that responsibility moves to someone else or you move on to another position. Along with the impersonation feature comes the ability to create accounts for departments and organizations. Then, you can simply impersonate that departmental account just as you would any other user.</p></li>
+
+</ul>
+
+<p>We hope you find these new features useful. Please let us know if you have any trouble with them, and if there are other features you'd like to see in the future.</p>
+
+
+<h3>Features Updated, Look Still Being Tweaked &bull; <span>April 20th, 2009</span></h3>
+<p>The upgrade over the weekend was a success. A few visual issues with the interface remain, but new features are available. The features will get their own post later today.</p>
+
+{% endblock %}

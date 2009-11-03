@@ -1,0 +1,142 @@
+{% load analytics %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+
+<title>JMUtube - A Service of the Center for Instructional Technology</title>
+
+
+<link href="{% url jmutube-static 'css/typography.css' %}" rel="stylesheet" type="text/css" media="screen">
+<link href="{% url jmutube-static 'css/layout.css' %}" rel="stylesheet" type="text/css" media="screen">
+<link href="{% url static 'admin/css/forms.css' %}" rel="stylesheet" type="text/css" media="screen">
+<link href="{% url jmutube-static 'jquery/jquery-ui-themeroller.css' %}" rel="stylesheet" type="text/css" media="screen">
+<script type="text/javascript" src="{% url jmutube-jsi18n %}"></script>
+<script type="text/javascript" src="{% url static 'admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% url static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+<script type="text/javascript" src="{% url static 'admin/js/calendar.js' %}"></script>
+<script type="text/javascript" src="{% url static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
+<script type="text/javascript" src="{% url jmutube-static 'jquery-1.2.6.min.js' %}"></script>
+<script type="text/javascript" src="{% url jmutube-static 'jquery-ui-personalized-1.5.2.min.js' %}"></script>
+<script type="text/javascript" src="{% url jmutube-static 'jquery/jquery.cookie.js' %}"></script>
+{% block javascript %}
+{% endblock %}
+</head>
+
+<body>
+
+	<div id="banner">
+
+		<a href="http://jmutube.cit.jmu.edu"><h1>JMUtube</h1></a>
+
+		<h2>Express Yourself. Or Someone Else.</h2>
+
+	</div>
+
+
+
+	<div id="headerNav">
+
+		<h2><a href="/">JMUtube Home</a></h2>
+
+		<h3><a href="http://cit.jmu.edu">A CIT@JMU Website</a></h3>
+
+	</div>
+
+
+
+	<div id="navigation">
+		<ul>
+			<li>{% if user.is_authenticated %}
+                	Hello {{ user.first_name }} {{user.last_name}}
+                {% else %}
+                    Hello, Guest
+                {% endif %}
+            </li>
+			<li><a href="{% url jmutube-media "video" %}">My Files</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{-% url options %}">Options</a></li>
+   			<li><a href="{% url jmutube-help %}">Help</a></li>
+			<li><a href="{% url jmutube-logout %}">Sign Out</a></li>
+			{% else %}
+   			<li><a href="{% url jmutube-help %}">Help</a></li>
+            <li><a href="{% url jmutube-media "video" %}">Sign In</a></li>
+            {% endif %}
+		</ul>
+	</div>
+
+
+
+<div id="main">
+
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+  {% block content %}
+  {% endblock %}
+
+</div>
+
+
+
+{% block sidebar %}
+
+<style type="text/css">
+#main {
+   margin-right: 200px;
+   min-width: 555px;
+    }
+</style>
+
+
+	<div id="sidebar">
+
+        <h4>About &bull; <span>JMUtube</span></h4>
+        <p>JMUtube is for the faculty and staff of JMU to store and deliver video and presentations. You can learn more on the <a href="/help/">Help</a> page or get started by accessing <a href="{-% url jmutube.media.media "video" %}">your files</a>.</p>
+        <h4>Twitter &bull; <span>Status</span></h4>
+			<div id="twitter_div">
+			<ul id="twitter_update_list"></ul>
+			<a href="http://twitter.com/jmutube" id="twitter-link" style="display:block;text-align:right;">See us on Twitter...</a>
+</div>
+
+    	<h4>About &bull; <span>CIT</span></h4>
+
+		<p> JMUtube is a service of <a href="http://cit.jmu.edu" target="_blank">The Center for Instructional Technology</a> at <a href="http://www.jmu.edu" target="_blank">James Madison University</a>. You can contact the CIT by email at <a href="mailto:cit@jmu.edu">cit@jmu.edu</a>.</p>
+
+    	<h6>Contact:</h6>
+		<p><a href="mailto:saundebn@jmu.edu">Grover Saunders </a></p>
+
+     	<h6>Last Modified: <span>4.21.2009</span></h6
+
+     	<img src="{% url jmutube-static 'images/footer_logo_black.gif' %}" alt="JMU Logo" />
+  </div>
+
+  <script type="text/javascript" src="http://twitter.com/javascripts/blogger.js"></script>
+  <script type="text/javascript" src="http://twitter.com/statuses/user_timeline/jmutube.json?callback=twitterCallback2&amp;count=1"></script>
+{% endblock %}
+
+
+{% analytics %}
+
+{% if debug %}
+<div style="background-color: #ddd; font-size: smaller; padding: 5px;
+        z-index: 1000; position: absolute; right: 5px; top: 10px;
+        -moz-opacity: .7; opacity: .7;"><!-- STATS: Total: %(totTime).2fs <br/>Python: %(pyTime).2fs <br/>DB: %(dbTime).2fs <br/>Queries: %(queries)d --></div>
+<!--
+{{ sql_queries|length }} queries:
+{% for q in sql_queries %}
+{{ q.sql }} ({{ q.time }})
+{% endfor %}
+-->
+{% endif %}
+
+</body>
+
+</html>

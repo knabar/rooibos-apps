@@ -1,0 +1,61 @@
+{% extends "jmutube-media.html" %}
+
+{% block mediacontent %}
+
+<style>
+
+.file {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.name {
+    font-weight: bold;
+}
+
+.exists {
+    font-style: italic;
+    color: #DDDD;
+    font-size: smaller;
+}
+
+</style>
+
+<form method="post" action="">
+
+{% if files %}
+
+
+
+<div>
+
+<p>Below you will find a list of Flash files from <a href="http://streaming.jmu.edu" target="_blank">http://streaming.jmu.edu</a> that can be automatically imported into JMUtube. Other types of content (Quicktime, Windows Media) may be imported directly or converted to the proper format by contacting Grover Saunders at <a href="mailto:saundebn@jmu.edu">saundebn@jmu.edu</a>.
+<p>Please select the files you would like to import from your old streaming account:</p>
+
+</div>
+
+{% for file in files %}
+
+<div class="file">
+<input type="checkbox" name="file" value="{{ file.name|escape }}"
+       {% if file.exists %}disabled="disabled"{% else %}checked="checked"{% endif %} />
+<span class="name">{{ file.name }}</span>
+{% if file.exists %}<span class="exists">(A file with this name already exists in your JMUtube account)</span>{% endif %}
+</div>
+{% endfor %}
+
+<input type="submit" value="Import files" />
+<a href="{% url jmutube-media "video" %}">Cancel</a>
+
+{% else %}
+
+<div>You do not have any files that can be imported in your old streaming account. Other types of content (Quicktime, Windows Media) may be imported directly or converted to the proper format by contacting Grover Saunders at <a href="mailto:saundebn@jmu.edu">saundebn@jmu.edu</a>.</div>
+<a href="{% url jmutube-media "video" %}">Return</a>
+
+{% endif %}
+
+
+
+</form>
+
+{% endblock %}
