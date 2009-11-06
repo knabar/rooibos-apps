@@ -1,0 +1,141 @@
+{% extends "svohp-master.html" %}
+
+{% block javascript %}
+    <style>
+        .marker {
+            font-style: italic;
+            color: green;
+        }
+        .play {
+            background-color: blue;
+            color: white;
+            margin-right: 10px;
+        }
+    </style>
+
+    <script type="text/javascript" src="{% url static 'jquery/jquery-1.3.2.min.js' %}"></script>
+    <script type="text/javascript" src="{% url svohp-static 'jquery.scrollTo-1.4.2-min.js' %}"></script>
+    <script type="text/javascript" src="{% url svohp-static 'soundmanager/script/soundmanager2.js' %}"></script>
+    <script type="text/javascript" src="{% url static 'jquery/jquery.ajaxmanager.js' %}"></script>
+    <script type="text/javascript">
+
+        var ajaxManager = $.manageAjax.create('cacheQueue', { queue: true });
+
+        var mySound;
+        var lasttime;
+        var lastscroll;
+        var scrolltargets;
+
+        soundManager.url = '{% url svohp-static 'soundmanager/swf' %}';
+        soundManager.waitForWindowLoad = true;
+        soundManager.allowPolling = true;
+        soundManager.debugMode = false;
+        soundManager.useHighPerformance = false;
+        soundManager.useFastPolling = false;
+        soundManager.onload = function() {
+            mySound = soundManager.createSound({
+            id: 'aSound',
+            url: '{{ mp3url }}',
+            whileplaying: function() {
+                function zero(s) { return ("0" + s).substring(("0" + s).length - 2); }
+                var pos = parseInt(mySound.position / 1000);
+                var hrs = parseInt(pos / 3600);
+                var min = parseInt((pos % 3600) / 60);
+                var sec = pos % 60;
+                var time = zero(hrs) + ":" + zero(min) + ":" + zero(sec);
+                if (time != lasttime) {
+                    lasttime = time;
+                    $("#timer").text(time);
+    {% if not edit %}
+                    if (!scrolltargets) scrolltargets = $("#transcript .play");
+                    var target;
+                    var targetid = "play-" + time.replace(/:/g, "-");
+                    for (var i = 0; i < scrolltargets.length; i++) {
+                        if (scrolltargets[i].id <= targetid) target = scrolltargets[i];
+                        else break;
+                    }
+                    if (target && (target != lastscroll)) {
+                        $("#transcript").scrollTo(target, 1000, {easing: 'swing'});
+                        lastscroll = target;
+                    }
+    {% endif %}
+                }
+            }
+          });
+        }
+
+        $(document).ready(function() {
+            $("#playpause").click(function() {
+                mySound.togglePause();
+                $("#playpause").val(mySound.paused ? "Play" : "Pause");
+            });
+
+            var markers = Array(
+                {% for par,time in markers.iteritems %}[{{ par }},"{{ time }}"]{% if not forloop.last %},{% endif %}{% endfor %}
+            );
+            var p = $("#transcript p");
+            for (var m in markers){
+                p.eq(markers[m][0]+1).prepend($("<span>").addClass("play").
+                                            attr("id", "play-" + markers[m][1].replace(/:/g, "-")).text(">")).
+                                            attr("title", "Play from " + markers[m][1]);
+            };
+
+            $(".play").click(function() {
+                var t = $(this).attr("id").substring(5).split("-");
+                time = parseInt(t[0], 10) * 3600 + parseInt(t[1], 10) * 60 + parseInt(t[2], 10);
+                mySound.play();
+                setTimeout(function() { mySound.setPosition(time * 1000); }, 100)
+                $("#playpause").val("Pause");
+            });
+
+    {% if edit %}
+            var note = $("<input type='button' value='Set Marker'>");
+            $("#transcript p").hover(function() {
+                $(this).css("background-color", "#FFFFAA");
+                note.appendTo(this);
+                var p = this;
+                note.click(function() {
+                    $(p).children(".marker").remove();
+                    note.remove();
+                    var next = $(p).next("p")[0];
+                    if (next) $("#transcript").scrollTo(next, 1000, {easing: 'swing'});
+                    $("<span>").addClass("marker").text("[" + $("#timer").text() + "]").appendTo(p);
+                    ajaxManager.add({
+                        type: 'POST',
+                        url: '{% url svohp-savemarkers %}',
+                        data: {name: '{{ record.name }}', index: $("#transcript p").index(p), time: $("#timer").text()},
+                        dataType: 'json',
+                        success: function(r) {
+                            $("#message").text(r.result + ": " + r.message);
+                            setTimeout(function() { $("#message").text(""); }, 5000);
+                        }
+                    });
+                });
+            }, function() {
+                $(this).css("background-color", "");
+                note.remove();
+            });
+    {% endif %}
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="feature">
+
+    <p><strong>{{ data.title }} interviewed by {{ data.contributor }} on {{ data.date }}</strong></p>
+    <p>{{ data.description }}</p>
+
+    <div>
+        <input type="button" id="playpause" value="Play" />
+        <span id="timer"></span>
+        <span id="message" style="color: red;"></span>
+    </div>
+
+    <div id="transcript" style="height: 300px; overflow: auto; border: 1px grey solid; padding: 5px;">
+        {{ transcript|linebreaks }}
+    </div>
+
+    </div>
+
+{% endblock %}
