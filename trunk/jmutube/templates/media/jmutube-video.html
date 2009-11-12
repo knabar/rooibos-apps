@@ -122,12 +122,13 @@
 <div id="playlists">
   <a href="" id="newplaylist">New playlist</a> or load: <select id="selectplaylist"></select><br />
   <span id="currentplaylisttitle">untitled</span> <input type="button" id="deleteplaylist" value="Delete" style="display: none;"/>
+  <h4>Playlist Builder</h4>
   <div id="playlistitems"></div>
   <div id="newplaylistitem">Drop new items here</div>
   <div><a href="" id="appendselectedtoplaylist">Append selected items to playlist</a></div>
   Title: <input type="text" id="playlisttitle" /> <input type="button" id="saveplaylist" value="Save" /> <br />
-  <a href="#" id="getplaylistlink">Get playlist for your site</a>
-  <span id="savefirstspan" style="display: none;">Save to get playlist for your site</span>
+  <a href="#" id="getplaylistlink" style="display: none;">Get Playlist For Your Site</a>
+  <span id="savefirstspan">Save to get playlist for your site</span>
 </div>
 
 <table id="files">
@@ -151,8 +152,8 @@
                         <a href="{% url jmutube-media-delete type, file.id, file.name %}">Delete</a>
                         <a href="{% url jmutube-media-rename type, file.id, file.name %}">Rename</a>
                         <a href="javascript:void(0)" onclick="window.open('{% url jmutube-static 'player/jmutube_popout_viewer.html' %}?listidx=0&rssfeed={% url jmutube-single-file-rss-feed user.username, file.id, file.name %}&timestamp=0&isplaying=true','jmutubepopout','height=408,width=488,toolbar=no,scrollbars=no,directories=no,location=yes,status=no,menubar=no,resizeable=no');false;">Preview</a>
-                        <a href="{{ file.media.get_absolute_url }}">Link</a>
-                        <a href="javascript:void(0)" onclick="$('#playlistitems').append(new_playlist_item_from_id('{{ file.id }}'))">Add to playlist</a>
+                        <a href="{{ file.media.get_absolute_url }}">Download</a>
+                        <a href="javascript:void(0)" onclick="$('#playlistitems').append(new_playlist_item_from_id('{{ file.id }}'))">Add to Playlist</a>
                         <div class="tags-line">
                         {% tags_for_object file.ownedwrapper as file_tags %}
                         {% for tag in file_tags %}
