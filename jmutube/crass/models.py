@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 
 class Computer(models.Model):
     building = models.CharField(max_length=50)
@@ -20,15 +21,20 @@ class Schedule(models.Model):
 
     def __unicode__(self):
         return u'%s from %s to %s for %s' % (self.computer, self.start_time, self.end_time, self.user)
-    
+
     class Meta:
         ordering = ['user', 'start_time']
 
 class Mapping(models.Model):
-    time_stamp = models.DateTimeField(auto_now=True)
+    time_stamp = models.DateTimeField()
     source_file = models.CharField(max_length=250)
     target_file = models.CharField(max_length=250)
     user = models.ForeignKey(User, null=True)
 
     def __unicode__(self):
         return u'%s -> %s at %s for %s' % (self.source_file, self.target_file, self.time_stamp, self.user)
+
+    def save(self, **kwargs):
+        if not self.time_stamp:
+            self.time_stamp = datetime.now()
+        super(Mapping, self).save(kwargs)
