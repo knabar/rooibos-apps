@@ -3,7 +3,7 @@ from rooibos.data.models import CollectionItem, FieldValue, Field, Record
 from rooibos.storage.models import Media
 from rooibos.util.models import OwnedWrapper
 from rooibos.storage.localfs import LocalFileSystemStorageSystem
-from util import get_jmutube_storage, get_jmutube_collection, all_files, us_to_sp, human_filesize
+from util import get_jmutube_storage, get_jmutube_collection, all_files, us_to_sp
 from tagging.models import Tag
 import os, errno, shutil
 from unzip import unzip
@@ -92,7 +92,6 @@ class JMUtubeStorageSystem(LocalFileSystemStorageSystem):
 
     def create_record_for_file(self, user, file, type):
         title = us_to_sp(os.path.splitext(os.path.split(file)[1])[0])
-        size = os.path.getsize(self.path(file))
         mimetype = MIME_TYPES.get(os.path.splitext(file)[1])
         record = Record.objects.create(owner=user,
                                        name=title,
