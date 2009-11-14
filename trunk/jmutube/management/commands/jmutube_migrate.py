@@ -1,8 +1,12 @@
 from optparse import make_option
-from django.core.management.base import BaseCommand
-from django.utils import simplejson
 import os
+from django.core.management.base import BaseCommand
+from django.core.urlresolvers import reverse
+from django.utils import simplejson
 from django.contrib.auth.models import User, Group
+from django.contrib.redirects.models import Redirect
+from django.contrib.sites.models import Site
+from django.conf import settings
 from rooibos.contrib.impersonate.models import Impersonation
 from rooibos.contrib.tagging.models import Tag
 from rooibos.data.models import Record, Field, FieldValue, CollectionItem
@@ -113,10 +117,12 @@ class Command(BaseCommand):
         collection=get_jmutube_collection()
         title_field = Field.objects.get(name='title', standard__prefix='dc')
         records = dict()
+        files = dict()
         allmedia = dict()
         for m in Media.objects.filter(storage=storage):
             allmedia[m.url] = m.record
         for d in data('repository.file'):
+            files[d['pk']] = d['fields']['file']
             mimetype = MIME_TYPES.get(os.path.splitext(d['fields']['file'])[1], 'application/octet-stream')
             url = '%s/%s/%s' % (users[d['fields']['user']].username,
                                                    d['fields']['type'],
@@ -153,6 +159,41 @@ class Command(BaseCommand):
                                                                title=d['fields']['title'])
             presentations[d['pk']] = presentation
             print 'c' if created else '.',
+        print
+
+        # create presentation redirects
+        print "Creating presentation redirects"
+        site = Site.objects.get(id=settings.SITE_ID)
+        for oldid, presentation in presentations.iteritems():
+            redirect, created1 = Redirect.objects.get_or_create(site=site,
+                old_path=reverse('jmutube-playlist-rss-feed-legacy', args=(presentation.owner.username, oldid)),
+                new_path=reverse('jmutube-playlist-rss-feed', args=(presentation.owner.username, presentation.id))
+                )
+            redirect, created2 = Redirect.objects.get_or_create(site=site,
+                old_path=reverse('jmutube-playlist-rss-feed-legacy', args=(presentation.owner.username, oldid)) + '?player=jmutube',
+                new_path=reverse('jmutube-playlist-rss-feed', args=(presentation.owner.username, presentation.id)) + '?player=jmutube'
+                )
+            redirect, created3 = Redirect.objects.get_or_create(site=site,
+                old_path=reverse('jmutube-playlist-play-legacy', args=(presentation.owner.username, oldid)),
+                new_path=reverse('jmutube-playlist-play', args=(presentation.owner.username, presentation.id))
+                )
+            print 'c' if created1 or created2 or created3 else '.',
+        print
+
+        print "Creating file redirects"
+        for oldid, record in records.iteritems():
+            try:
+                redirect, created1 = Redirect.objects.get_or_create(site=site,
+                    old_path=reverse('jmutube-single-file-rss-feed-legacy', args=(presentation.owner.username, files[oldid])),
+                    new_path=reverse('jmutube-single-file-rss-feed', args=(presentation.owner.username, record.id, record.name))
+                    )
+                redirect, created2 = Redirect.objects.get_or_create(site=site,
+                    old_path=reverse('jmutube-single-file-rss-feed-legacy', args=(presentation.owner.username, files[oldid])) + '?player=jmutube',
+                    new_path=reverse('jmutube-single-file-rss-feed', args=(presentation.owner.username, record.id, record.name)) + '?player=jmutube'
+                    )
+                print 'c' if created1 or created2 else '.',
+            except Exception, ex:
+                print 'X',
         print
 
         # create presentation items

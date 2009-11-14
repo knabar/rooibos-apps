@@ -163,7 +163,7 @@
                         {% endfor %}
                         </div>
                 </td>
-                <td>{{ file.media.file_size|filesizeformat }}</td>
+                <td>{% with file.media.file_size as size %}{% if size %}{{ size|filesizeformat }}{% endif %}{% endwith %}</td>
         </tr>
 {% endfor %}
 </table>

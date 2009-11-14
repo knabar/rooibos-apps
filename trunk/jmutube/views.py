@@ -30,7 +30,7 @@ class RecordWrapper(object):
         self.name = record.name
         self.title = record.title
         self.ownedwrapper = OwnedWrapper.objects.get_for_object(user=record.owner, object=record)
-        media = record.media_set.select_related('storage').all()
+        media = record.media_set.select_related('storage').filter(master=None)
         if media:
             self.media = media[0]
             self.url = self.media.storage.storage_system.get_absolute_media_url(self.media.storage, self.media)
