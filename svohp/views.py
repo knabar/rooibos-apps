@@ -27,7 +27,9 @@ def interview(request, name):
     record = get_object_or_404(collection.records, name=name)
     fvs = record.get_fieldvalues(hidden=True)
     transcript = re.sub('(\n\s*)+', '\n\n', filter(lambda f: f.label=='Transcript', fvs)[0].value).strip()
-    markers = dict(map(lambda v: v.split(','), filter(lambda f: f.label=='Markers', fvs)[0].value.split('\n')))
+    markers = filter(lambda f: f.label=='Markers', fvs)
+    if markers:
+        markers = dict(map(lambda v: v.split(','), markers[0].value.split('\n')))
     mp3 = record.media_set.filter(mimetype='audio/mpeg')[0]
     edit = check_access(request.user, collection, write=True) and (request.GET.get('edit') == 'edit')
 

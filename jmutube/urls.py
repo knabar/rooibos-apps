@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.views import login, logout
 from django.views.generic.simple import direct_to_template
 from rooibos.ui.views import upload_progress
+from rooibos.access.views import login, logout
 from views import media_main, migrate_files, media_delete, media_rename, thumbnail, upload_file
 
 
