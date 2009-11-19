@@ -7,6 +7,7 @@ SVOHP_MEDIA_ROOT            = 'd:/data/SVOHP'
 
 # append additional apps
 INSTALLED_APPS = (
+    'apps.svohp',
 )
 
 STORAGE_SYSTEMS = {
