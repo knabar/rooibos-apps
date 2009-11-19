@@ -8,7 +8,7 @@ from views import media_main, migrate_files, media_delete, media_rename, thumbna
 
 
 urlpatterns = patterns('',
-    (r'^$', direct_to_template, {'template': 'jmutube-home.html'}),
+    url(r'^$', direct_to_template, {'template': 'jmutube-home.html'}, name='jmutube-main'),
 
     url(r'^admin/(.*)', admin.site.root, {'SSL': True}, name='admin'),
     url(r'^mstatic/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_DIR}, name='jmutube-master-static'),
