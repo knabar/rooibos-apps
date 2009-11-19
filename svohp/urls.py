@@ -6,7 +6,7 @@ from django.views.generic.simple import direct_to_template
 from views import list, interview, savemarkers
 
 urlpatterns = patterns('',
-    (r'^$', direct_to_template, {'template': 'svohp-home.html'}),
+    url(r'^$', direct_to_template, {'template': 'svohp-home.html'}, name='svohp-main'),
 
     url(r'^interviews.html$', list),
     url(r'^interview/(?P<name>[\w-]+)/$', interview, name='svohp-interview'),
