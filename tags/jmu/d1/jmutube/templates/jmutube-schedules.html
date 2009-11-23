@@ -1,0 +1,185 @@
+{% extends "jmutube-master.html" %}
+{% load humanize %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+var in_update_times = false;
+function update_times(new_start, new_end)
+{
+    if (in_update_times) return; // recursive change events
+    in_update_times = true;
+    var drop_start = parseInt($('#id_start').val());
+    var drop_end = parseInt($('#id_end').val());
+    var slider_start = $('#timerange').slider('value',0);
+    var slider_end = $('#timerange').slider('value',1);
+    if (new_start != drop_start || new_start != slider_start)
+    {
+        if (new_start == 24 *6) new_start--;
+        if (new_start >= new_end) new_end = new_start + 1;
+        if (new_end - new_start > 18) new_end = new_start + 18;
+    }
+    else
+    {
+        if (new_end == 0) new_end++;
+        if (new_start >= new_end) new_start = new_end - 1;
+        if (new_end - new_start > 18) new_start = new_end - 18;
+    }
+    if (new_start != drop_start) $('#id_start').val(new_start);
+    if (new_end != drop_end) $('#id_end').val(new_end);
+    if (new_end != slider_end) $('#timerange').slider('moveTo', new_end, 1);
+    if (new_start != slider_start) $('#timerange').slider('moveTo', new_start, 0);
+    in_update_times = false;
+}
+
+$(window).bind("load", function() {
+    $('#timerange').slider({ max: 24 * 6, stepping: 1, range: true,
+                           handles: [{start: $('#id_start').val()},
+                                     {start: $('#id_end').val()}],
+                           change: function(e, ui) {
+                            update_times($('#timerange').slider('value',0),$('#timerange').slider('value',1)); }
+                           });
+
+    var on_dropbox_change = function() { update_times(parseInt($('#id_start').val()), parseInt($('#id_end').val())) };
+    $('#id_start').bind("change", on_dropbox_change);
+    $('#id_end').bind("change", on_dropbox_change);
+});
+</script>
+
+
+<style>
+.ui-slider {
+background-position:center center;
+background-repeat:no-repeat;
+height:20px;
+position:relative;
+width:590px;
+}
+.ui-slider-handle {
+background-image:url({% url jmutube-static 'slider-handle.gif' %});
+height:23px;
+left:0;
+position:absolute;
+top:0;
+margin-top: 5px;
+width:12px;
+z-index:1;
+}
+.ui-slider-handle-active {
+border:1px dotted black;
+}
+.ui-slider-disabled .ui-slider-handle {
+opacity:0.5;
+}
+.ui-slider-range {
+background:#50A029 none repeat scroll 0 0;
+height:100%;
+opacity:0.3;
+position:absolute;
+width:100%;
+}
+.ui-slider, .ui-slider-1 {
+background-image:url({% url jmutube-static 'slider-bg-1.png' %});
+}
+.ui-slider-2 {
+background-image:url({% url jmutube-static 'slider-bg.png' %});
+}
+
+</style>
+
+
+{% endblock %}
+
+
+{% block content %}
+
+<ul id="contentTabs">
+    <li {% ifequal type "video" %}class="selectedTab"{% endifequal %}><a href="{% url jmutube-media "video" %}">Video</a></li>
+    <li {% ifequal type "audio" %}class="selectedTab"{% endifequal %}><a href="{% url jmutube-media "audio" %}">Audio</a></li>
+    <li {% ifequal type "presentations" %}class="selectedTab"{% endifequal %}><a href="{% url jmutube-media "presentations" %}">Presentations</a></li>
+    <li id="upload"><a href="{% url jmutube-upload %}">Upload</a></li>
+    <li class="selectedTab"><a href="{% url jmutube-crass-schedules %}">CRASS Agenda</a></li>
+    <li><a href="{% url jmutube-relay %}">Relay</a></li>
+</ul>
+
+
+<h3>Schedule A CRASS Recording</h3>
+
+<form method="post" action="">
+<table>
+    {{ form }}
+</table>
+
+<input type="hidden" name="start_time" id="start_time" value="7.1666" />
+<input type="hidden" name="end_time" id="end_time" value="8.1666" />
+
+
+<!-- <div id='timerange' class='ui-slider-2' style="margin: 40px;">
+<div class='ui-slider-handle'></div>
+<div class='ui-slider-handle' style="left: 188px;"></div>
+</div>
+
+ -->
+
+<input type="submit" value="Submit Schedule" />
+</form>
+
+
+{% if not schedules %}
+
+<div>You do not have any schedules during the past seven days or in the future</div>
+
+{% else %}
+
+<h3>Your current schedules:</h3>
+
+<form method="post" action="">
+<table>
+    <tr>
+        <th>Room</th>
+        <th>Time</th>
+        <th></th>
+    </tr>
+{% for schedule in schedules %}
+    <tr>
+        <td>{{ schedule.computer.building }} {{ schedule.computer.room }}</td>
+        <td>{{ schedule.start_time|naturalday }} {{ schedule.start_time|time }} to {{ schedule.end_time|time }}
+            ({{ schedule.end_time|timeuntil:schedule.start_time }})</td>
+        <td><input type="submit" name="delete_schedule_{{ schedule.id }}" value="Delete" /></td>
+    </tr>
+{% endfor %}
+</table>
+</form>
+
+{% endif %}
+
+
+
+{% if not mappings %}
+
+<div>No files have been transferred to your account in the past seven days</div>
+
+{% else %}
+
+<h3>Your recent mappings:</h3>
+
+<table>
+    <tr>
+        <th>Timestamp</th>
+        <th>File</th>
+    </tr>
+{% for mapping in mappings %}
+    <tr>
+        <td>{{ mapping.time_stamp|naturalday }} {{ mapping.time_stamp|time }}</td>
+        <td>{{ mapping.file }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+
+
+{% endif %}
+
+<p><strong>Tip: You can schedule recordings in the past to claim your unscheduled recordings.</strong></p>
+
+{% endblock %}

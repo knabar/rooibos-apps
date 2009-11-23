@@ -1,0 +1,14 @@
+{% extends "svohp-master.html" %}
+
+
+{% block content %}
+    <div class="feature">
+
+{% for data,record in records %}
+    <p><strong><a href="{% url svohp-interview record.name %}">{{ data.title }} interviewed by {{ data.contributor }} on {{ data.date }}</a></strong></p>
+    <p>{{ data.description }}</p>
+{% endfor %}
+
+    </div>
+    <div class="story">    </div>
+{% endblock %}

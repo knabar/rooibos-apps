@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>{{ title }}</title>
+</head>
+<body bgcolor="white">
+<h1>{{ title }}</h1>
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,115,0" width="480" height="400" id="jmutube" align="middle">
+       <param name="movie" value="http://jmutube.cit.jmu.edu/static/player/jmutube.swf" />
+       <param name="allowFullScreen" value="true" />
+       <param name="allScriptAccess" value="sameDomain" />
+       <param name="quality" value="high" />
+       <param name="scale" value="exactfit" />
+       <param name="loop" value="false" />
+       <param name="FlashVars" value="rssfeed={{ feed }}?player=jmutube" />
+       <embed src="http://{{ request.get_host }}{% url jmutube-static 'player/jmutube.swf' %}" width="480" height="400" align="middle" name="jmutube"
+          allowfullscreen="true" quality="high" scale="exactfit" type="application/x-shockwave-flash"
+          pluginspage="http://www.macromedia.com/go/getflashplayer" loop="false"
+          flashvars="rssfeed={{ feed }}?player=jmutube"></embed>
+</object>
+</body>
+</html>

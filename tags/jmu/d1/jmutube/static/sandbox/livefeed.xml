@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+     xmlns:jmutube="http://jmutube.cit.jmu.edu/" version="2.0">
+<channel>
+    <title>JMUtube LIVE!</title>
+    <link>http://jmutube.cit.jmu.edu/</link>
+    <language>en-us</language>
+    <itunes:owner>
+        <itunes:name>Kevin Hegg</itunes:name>
+        <itunes:email>heggkj@jmu.edu</itunes:email>
+    </itunes:owner>
+    <jmutube:params autoplay="false" showbigplayheadtime="false" islive="true"/>
+    <item>
+        <title>JMUtube Live!</title>
+        <description>JMUtube Live!</description>
+        <enclosure url="rtmp://flash.streaming.jmu.edu:80/live/livestream" type="video/x-flv" />
+    </item>
+</channel>
+</rss>

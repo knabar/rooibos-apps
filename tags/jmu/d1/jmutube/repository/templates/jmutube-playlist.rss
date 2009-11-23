@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+     xmlns:jmutube="http://jmutube.cit.jmu.edu/" version="2.0">
+<channel>
+    <title>{{ title }}</title>
+    <link>{{ url }}</link>
+    <language>en-us</language>
+    <itunes:owner>
+        <itunes:name>{{ user.first_name }} {{user.last_name}}</itunes:name>
+        <itunes:email>{{ user.email }}</itunes:email>
+    </itunes:owner>
+    <jmutube:params autoplay="false" showbigplayheadtime="false"/>
+{% for item in playlist %}
+    <item>
+        <title>{{ item.file.title }}</title>
+        <description>{{ item.file.title }}</description>
+        <enclosure url="{% if jmutube_player %}{{ item.jmutube_player_url }}{% else %}{{ item.url }}{% endif %}"
+                   length="{{ item.size }}" type="{{ item.mimetype }}" />
+    </item>
+{% endfor %}
+</channel>
+</rss>
