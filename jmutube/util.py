@@ -22,8 +22,6 @@ def get_jmutube_collection():
     collection, created = Collection.objects.get_or_create(name='jmutube',
                                                            defaults=dict(title='JMUtube',
                                                                          description='JMUtube collection'))
-    if created:
-        AccessControl.objects.create(content_object=collection, usergroup=get_jmutube_everybody_group(), read=True)
     return collection
 
 
