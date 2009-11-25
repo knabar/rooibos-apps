@@ -37,7 +37,11 @@ class Command(BaseCommand):
         _data = simplejson.load(open(file))
 
         def data(model):
-            return filter(lambda d: d['model'] == model, _data)
+            dataset = filter(lambda d: d['model'] == model, _data)
+            # need to convert unicode keys to regular strings
+            for data in dataset:
+            	data['fields'] = dict((str(k), v) for k, v in data['fields'].iteritems())
+            return dataset
 
         # create user groups
         groups = dict()
