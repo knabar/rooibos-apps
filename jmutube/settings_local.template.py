@@ -29,10 +29,5 @@ STORAGE_SYSTEMS = {
 }
 
 
-LOGIN_CHECKS = (
-    'apps.jmutube.settings_local.verify_user',
-)
-
-
-def verify_user(user, attributes):
-    return any(r in ('faculty', 'staff', 'administrator') for r in attributes.get('eduPersonPrimaryAffiliation', []))
+# restrict to users with certain attributes
+JMUTUBE_USER_RESTRICTION = { 'eduPersonPrimaryAffiliation': ('faculty', 'staff', 'administrator') }

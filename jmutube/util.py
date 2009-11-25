@@ -1,11 +1,12 @@
 import os, fnmatch
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from rooibos.storage.models import Storage
 from rooibos.data.models import Collection
 from rooibos.util import xfilter
-from rooibos.access.models import ExtendedGroup, EVERYBODY_GROUP, AccessControl
+from rooibos.access.models import ExtendedGroup, EVERYBODY_GROUP, ATTRIBUTE_BASED_GROUP, AccessControl
 
 
 def get_jmutube_storage():
@@ -30,10 +31,33 @@ def get_jmutube_everybody_group():
     return group
 
 
-def jmutube_login_required(function):
-    decorator = login_required(function)
-    decorator.login_url = settings.JMUTUBE_LOGIN_URL
-    return decorator
+def get_jmutube_facultystaff_group():
+    if not hasattr(settings, 'JMUTUBE_USER_RESTRICTION'):
+        return None
+    group, created = ExtendedGroup.objects.get_or_create(name='jmutube_facultystaff', type=ATTRIBUTE_BASED_GROUP)
+    if created:
+        for attr in settings.JMUTUBE_USER_RESTRICTION.keys():
+            attribute = group.attribute_set.create(attribute=attr)
+            for val in settings.JMUTUBE_USER_RESTRICTION[attr]:
+                attribute.attributevalue_set.create(value=val)
+    return group
+
+
+def jmutube_login_required(function, redirect_field_name=REDIRECT_FIELD_NAME):
+    def _is_authenticated(user):
+        if not user.is_authenticated():
+            return False
+        if user.is_superuser:
+            return True
+        group = get_jmutube_facultystaff_group()
+        return (group == None) or (group.user_set.filter(id=user.id).count() == 1)
+    actual_decorator = user_passes_test(
+        _is_authenticated,
+        redirect_field_name=redirect_field_name
+    )
+    actual_decorator = actual_decorator(function)
+    actual_decorator.login_url = settings.JMUTUBE_LOGIN_URL
+    return actual_decorator
 
 
 def all_files(root, patterns='*', single_level=False, yield_folders=False):
