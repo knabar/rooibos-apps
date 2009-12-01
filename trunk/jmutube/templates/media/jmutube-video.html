@@ -144,7 +144,7 @@
                     <input type="checkbox" name="file" value="{{ file.id }}" class="filecheck" />
                 </td>
                 <td>
-                    <img src="{% url jmutube-thumbnail user.username, file.id, file.name %}" height="50" />
+                    <img src="{% url jmutube-thumbnail user.username, file.id, file.name %}?square" height="50" />
                 </td>
                 <td>
                     <div class="file" id="file_{{ file.id }}">

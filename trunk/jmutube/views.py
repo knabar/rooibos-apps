@@ -41,7 +41,7 @@ class RecordWrapper(object):
 
 @jmutube_login_required
 def media_main(request, type):
-
+    
     if request.method == 'POST':
         tag = request.POST.get('tag').replace('"', '')
         ids = map(int, filter(None, request.POST.get('files').split(',')))
@@ -157,7 +157,8 @@ def media_rename(request, type, id, name):
 
 def thumbnail(request, username, id, name):
     record = get_object_or_404(Record, id=id, owner__username=username, source__startswith='jmutube')
-    media = get_thumbnail_for_record(record, request.user)
+
+    media = get_thumbnail_for_record(record, request.user, crop_to_square=request.GET.has_key('square'))
     if media:
         content = media.load_file()
         if content:
