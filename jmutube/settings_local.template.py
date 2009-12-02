@@ -12,6 +12,8 @@ JMUTUBE_MEDIA_ROOT            = 'd:/dev/jmutube/media'
 JMUTUBE_CRASS_MISC_FOLDER     = 'd:/dev/jmutube/media/misc'
 JMUTUBE_RELAY_INCOMING_FOLDER = 'd:/dev/jmutube/media/relay_incoming'
 
+AUDIO_THUMBNAILS = 'd:/dev/jmutube/static/images/audiothumbs'
+
 
 # Don't need to change anything below this line
 
