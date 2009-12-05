@@ -176,7 +176,7 @@ def upload_file(request):
         file = forms.FileField()
 
     if request.method == 'POST':
-        request.upload_handlers.insert(0, UploadProgressCachedHandler(request))
+        request.upload_handlers.insert(0, UploadProgressCachedHandler(request, 1024 ** 3)) # limit upload to 1 GB
         uploadform = UploadFileForm(request.POST, request.FILES)
         if uploadform.is_valid():
             file = request.FILES['file']
