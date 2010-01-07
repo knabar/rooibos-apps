@@ -22,7 +22,7 @@ def playlist_rss_feed(request, user, title):
     def items():
         for item in playlist.items.all():
             media = item.record.media_set.filter(storage=storage)[0]
-            yield item.record, media
+            yield item.record, media, item.type
 
     return render_to_response('jmutube-playlist.rss',
                               { 'title': playlist.title,
@@ -31,12 +31,12 @@ def playlist_rss_feed(request, user, title):
                                'jmutube_player': request.GET.get('player') == 'jmutube',
                                'playlist': (
                                     {'file': record,
-                                     'url': storage.storage_system.get_absolute_media_url(storage, media),
-                                     'jmutube_player_url': storage.storage_system.get_jmutube_player_url(storage, media),
+                                     'url': storage.storage_system.get_absolute_media_url(storage, media, delivery),
+                                     'jmutube_player_url': storage.storage_system.get_jmutube_player_url(storage, media, delivery),
                                      'mimetype': media.mimetype,
                                      'size': media.file_size,
                                 }
-                                for record, media in items() )},
+                                for record, media, delivery in items() )},
                               context_instance = RequestContext(request))
 
 def single_file_rss_feed(request, user, id, name):

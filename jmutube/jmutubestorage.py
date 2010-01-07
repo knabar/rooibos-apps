@@ -59,8 +59,8 @@ class JMUtubeStorageSystem(LocalFileSystemStorageSystem):
             return "rtmp://flash.streaming.jmu.edu:80/videos/users/%s%s" % (
                     prot, file.replace('\\', '/'))
 
-    def get_jmutube_player_url(self, storage, media):
-        return self.get_absolute_media_url(storage, media, delivery='S' if media.mimetype == 'audio/mpeg' else None)
+    def get_jmutube_player_url(self, storage, media, delivery=None):
+        return self.get_absolute_media_url(storage, media, delivery='S' if media.mimetype == 'audio/mpeg' else delivery)
 
     def save(self, name, content):
         super(JMUtubeStorageSystem, self).save(name, content)
