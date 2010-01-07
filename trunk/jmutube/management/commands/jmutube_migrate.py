@@ -14,13 +14,14 @@ from rooibos.storage.models import Media
 from rooibos.presentation.models import Presentation, PresentationItem
 from rooibos.util.models import OwnedWrapper
 from apps.jmutube.crass.models import Computer, Mapping, Schedule
-from apps.jmutube.util import get_jmutube_storage, get_jmutube_collection
+from apps.jmutube.util import get_jmutube_storage, get_jmutube_collection, get_jmutube_facultystaff_group
 from apps.jmutube.jmutubestorage import MIME_TYPES
 
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--file', '-f', dest='file', help='Legacy JMUtube data file created by dumpdata'),
+        make_option('--clean', '-c', action='store_true', dest='clean', help='Delete all existing file and playlist entries')
     )
     help = "Migrates an old JMUtube installation's JSON database dump into the MDID3 based JMUtube"
 
@@ -33,14 +34,35 @@ class Command(BaseCommand):
         if not os.path.isfile(file):
             print "File not found."
             return
-
+        clean = options.get('clean', False)
+        
         _data = simplejson.load(open(file))
+
+
+        storage = get_jmutube_storage()
+        collection = get_jmutube_collection()
+
+        if clean:
+            
+            def remove(query):
+                print "Before: ", query.count()
+                query.delete()
+                print "After: ", query.count()
+            
+            print "Deleting existing records and media"
+            remove(Media.objects.filter(storage=storage))
+            remove(Record.objects.filter(collection=collection))
+            print "Deleting presentations"
+            remove(Presentation.objects.filter(source='jmutube'))
+            
+            return
+
 
         def data(model):
             dataset = filter(lambda d: d['model'] == model, _data)
             # need to convert unicode keys to regular strings
             for data in dataset:
-            	data['fields'] = dict((str(k), v) for k, v in data['fields'].iteritems())
+                data['fields'] = dict((str(k), v) for k, v in data['fields'].iteritems())
             return dataset
 
         # create user groups
@@ -54,6 +76,7 @@ class Command(BaseCommand):
 
         # create users
         users = dict()
+        facstaffgroup = get_jmutube_facultystaff_group()
         print "Creating users"
         for d in data('auth.user'):
             g = d['fields'].pop('groups')
@@ -62,7 +85,7 @@ class Command(BaseCommand):
             user, created = User.objects.get_or_create(username=u,
                                                        defaults=d['fields'])
             users[d['pk']] = user
-
+            user.groups.add(facstaffgroup)
             for gid in g:
                 user.groups.add(groups[gid])
 
@@ -117,8 +140,6 @@ class Command(BaseCommand):
 
         # create records and media
         print "Creating records and media"
-        storage = get_jmutube_storage()
-        collection=get_jmutube_collection()
         title_field = Field.objects.get(name='title', standard__prefix='dc')
         records = dict()
         files = dict()
@@ -168,36 +189,40 @@ class Command(BaseCommand):
         # create presentation redirects
         print "Creating presentation redirects"
         site = Site.objects.get(id=settings.SITE_ID)
+        
+        def create_redirect(old_path, new_path):
+            redirect, created = Redirect.objects.get_or_create(site=site,
+                                                               old_path=old_path,
+                                                               defaults=dict(new_path=new_path))
+            if not created and redirect.new_path != new_path:
+                redirect.new_path = new_path
+                redirect.save()
+            return redirect, created
+        
         for oldid, presentation in presentations.iteritems():
-            redirect, created1 = Redirect.objects.get_or_create(site=site,
-                old_path=reverse('jmutube-playlist-rss-feed-legacy', args=(presentation.owner.username, oldid)),
-                new_path=reverse('jmutube-playlist-rss-feed', args=(presentation.owner.username, presentation.id))
-                )
-            redirect, created2 = Redirect.objects.get_or_create(site=site,
-                old_path=reverse('jmutube-playlist-rss-feed-legacy', args=(presentation.owner.username, oldid)) + '?player=jmutube',
-                new_path=reverse('jmutube-playlist-rss-feed', args=(presentation.owner.username, presentation.id)) + '?player=jmutube'
-                )
-            redirect, created3 = Redirect.objects.get_or_create(site=site,
-                old_path=reverse('jmutube-playlist-play-legacy', args=(presentation.owner.username, oldid)),
-                new_path=reverse('jmutube-playlist-play', args=(presentation.owner.username, presentation.id))
-                )
+            redirect, created1 = create_redirect(
+                reverse('jmutube-playlist-rss-feed-legacy', args=(presentation.owner.username, oldid)),
+                reverse('jmutube-playlist-rss-feed', args=(presentation.owner.username, presentation.id)))
+            redirect, created2 = create_redirect(
+                reverse('jmutube-playlist-rss-feed-legacy', args=(presentation.owner.username, oldid)) + '?player=jmutube',
+                reverse('jmutube-playlist-rss-feed', args=(presentation.owner.username, presentation.id)) + '?player=jmutube')
+            redirect, created3 = create_redirect(
+                reverse('jmutube-playlist-play-legacy', args=(presentation.owner.username, oldid)),
+                reverse('jmutube-playlist-play', args=(presentation.owner.username, presentation.id)))
             print 'c' if created1 or created2 or created3 else '.',
         print
 
         print "Creating file redirects"
         for oldid, record in records.iteritems():
-            try:
-                redirect, created1 = Redirect.objects.get_or_create(site=site,
-                    old_path=reverse('jmutube-single-file-rss-feed-legacy', args=(presentation.owner.username, files[oldid])),
-                    new_path=reverse('jmutube-single-file-rss-feed', args=(presentation.owner.username, record.id, record.name))
-                    )
-                redirect, created2 = Redirect.objects.get_or_create(site=site,
-                    old_path=reverse('jmutube-single-file-rss-feed-legacy', args=(presentation.owner.username, files[oldid])) + '?player=jmutube',
-                    new_path=reverse('jmutube-single-file-rss-feed', args=(presentation.owner.username, record.id, record.name)) + '?player=jmutube'
-                    )
-                print 'c' if created1 or created2 else '.',
-            except Exception, ex:
-                print 'X',
+            redirect, created1 = create_redirect(
+                reverse('jmutube-single-file-rss-feed-legacy', args=(presentation.owner.username, files[oldid])),
+                reverse('jmutube-single-file-rss-feed', args=(presentation.owner.username, record.id, record.name))
+                )
+            redirect, created2 = create_redirect(
+                reverse('jmutube-single-file-rss-feed-legacy', args=(presentation.owner.username, files[oldid])) + '?player=jmutube',
+                reverse('jmutube-single-file-rss-feed', args=(presentation.owner.username, record.id, record.name)) + '?player=jmutube'
+                )
+            print 'c' if created1 or created2 else '.',
         print
 
         # create presentation items
