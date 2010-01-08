@@ -8,6 +8,7 @@ import shutil
 import re
 from apps.jmutube.util import make_unique, get_jmutube_storage
 from tagging.models import Tag
+from rooibos.util.models import OwnedWrapper
 
 class Job(HourlyJob):
     help = "Import relay files"
