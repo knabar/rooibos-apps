@@ -33,7 +33,7 @@ $(function() {
 
         var freq = 1000; // freqency of update in ms
         var uuid = gen_uuid(); // id for this upload so we can fetch progress info.
-        var progress_url = '{% url jmutube-upload-progress %}'; // ajax view serving progress info
+        var progress_url = "{% url jmutube-upload-progress %}"; // ajax view serving progress info
         this.action += (this.action.indexOf('?') == -1 ? '?' : '&') + 'X-Progress-ID=' + uuid;
 
         var $progress = $('#upload-progress')
@@ -44,6 +44,7 @@ $(function() {
             $.getJSON(progress_url, {'X-Progress-ID': uuid}, function(data, status){
                 var stop = false;
                 if (data) {
+                	console.log(data);
                     var progress = parseInt(data.uploaded) / parseInt(data.length);
                     var width = $progress.find('.progress-container').width()
                     stop = progress > 0.95;
@@ -72,6 +73,13 @@ $(function() {
 	</ul>
 	</li>
 	<li>
+	<strong>Audio:</strong>
+	<ul>
+		<li>.mp3 files using a standardized sample rate</li>
+		<li>AAC audio files with an .m4a extension</li>
+	</ul>
+	</li>	
+	<li>
 	<strong>Presentations:</strong>
 	<ul>
 		<li>.zip files produced by Camtasia, Adobe Presenter, or Adobe Captivate.</li>
@@ -80,6 +88,5 @@ $(function() {
 	</li>
 </ul>
 <h5>Tip: You can upload .m4v files by changing the extension to .mp4 before you upload.</h5>
-<p>Have an account at <a href="http://streaming.jmu.edu" target="_blank">http://streaming.jmu.edu</a> already? You can import your Flash files from there using our <a href="{% url jmutube-migrate-files %}">migration tool</a>.</p>
 
 {% endblock %}
