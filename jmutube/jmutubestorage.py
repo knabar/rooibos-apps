@@ -53,7 +53,7 @@ class JMUtubeStorageSystem(LocalFileSystemStorageSystem):
         if delivery == 'P' or (m[:5] != 'video' and m[:5] != 'audio'):
             return "http://jmutube.cit.jmu.edu/users/%s" % media.url.replace('\\', '/')
         else:
-            prot = 'mp4:' if m in ('video/mp4','video/quicktime') else ''
+            prot = 'mp4:' if m in ('video/mp4','video/quicktime', 'audio/mp4a-latm') else ''
             prot = 'mp3:' if m in ('audio/mpeg') else prot
             file = media.url[:-4] if m in ('audio/mpeg') else media.url
             return "rtmp://flash.streaming.jmu.edu:80/videos/users/%s%s" % (
