@@ -8,6 +8,7 @@ from tagging.models import Tag
 import os, errno, shutil
 from unzip import unzip
 from StringIO import StringIO
+import logging
 
 
 FILE_TYPES = {
@@ -110,13 +111,18 @@ class JMUtubeStorageSystem(LocalFileSystemStorageSystem):
         return record
 
     def sync_files(self, user):
+        def unify_paths(list):
+            return map(lambda s: s.replace('\\', '/'), list)
+        logging.debug("Synching files for %s" % user.username)
+        media = unify_paths([m.url for m in Media.objects.select_related('record').filter(record__owner=user, storage=get_jmutube_storage())])
         for type, extensions in FILE_TYPES.iteritems():
             subdir = os.path.join(user.username, type)
-            files = self.list_files(subdir, extensions)
-            media = Media.objects.select_related('record').filter(record__owner=user,
-                                                                  url__in=files,
-                                                                  storage=get_jmutube_storage())
+            files = unify_paths(self.list_files(subdir, extensions))
             for m in media:
-                files.remove(m.url)
+                try:
+                    files.remove(m)
+                except ValueError:
+                    pass
             for file in files:
+                logging.debug("Creating record for %s owned by %s" % (file, user.username))
                 self.create_record_for_file(user, file, type)
