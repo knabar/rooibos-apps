@@ -19,6 +19,17 @@ from rooibos.data.models import Record, Field, FieldValue
 from rooibos.util.models import OwnedWrapper
 from rooibos.storage import get_thumbnail_for_record
 from rooibos.ui import UploadProgressCachedHandler
+from rooibos.access.views import login
+import logging
+
+
+def jmutube_login(request, *args, **kwargs):
+    response = login(request, *args, **kwargs)
+    if type(response) == HttpResponseRedirect:
+        logging.debug("JMUtube login for %s" % request.user)
+        get_jmutube_storage().storage_system.sync_files(request.user)
+    return response
+
 
 
 class RecordWrapper(object):

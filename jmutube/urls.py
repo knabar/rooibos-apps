@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.views.generic.simple import direct_to_template
 from rooibos.ui.views import upload_progress
 from rooibos.access.views import login, logout
-from views import media_main, migrate_files, media_delete, media_rename, thumbnail, upload_file
+from views import jmutube_login, media_main, migrate_files, media_delete, media_rename, thumbnail, upload_file
 
 admin.autodiscover()
 
@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^admin/(.*)', admin.site.root, {'SSL': True}, name='admin'),
 #    url(r'^mstatic/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_DIR}, name='jmutube-master-static'),
 
-    url(r'^accounts/login/$', login, {'template_name': 'registration/jmutube-login.html', 'SSL': True}, name='jmutube-login'),
+    url(r'^accounts/login/$', jmutube_login, {'template_name': 'registration/jmutube-login.html', 'SSL': True}, name='jmutube-login'),
     url(r'^accounts/logout/$', logout, {'template_name': 'registration/jmutube-logout.html'}, name='jmutube-logout'),
     url(r'^accounts/media/upload/$', upload_file, name='jmutube-upload'),
     url(r'^accounts/media/upload/progress/$', upload_progress, name='jmutube-upload-progress'),
