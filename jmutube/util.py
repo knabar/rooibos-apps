@@ -1,6 +1,7 @@
 import os, fnmatch
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from rooibos.storage.models import Storage
@@ -31,6 +32,11 @@ def get_jmutube_everybody_group():
     return group
 
 
+def get_jmutube_allowed_users_group():
+    group, created = Group.objects.get_or_create(name='jmutube_allowed_users')
+    return group
+
+
 def get_jmutube_facultystaff_group():
     if not hasattr(settings, 'JMUTUBE_USER_RESTRICTION'):
         return None
@@ -50,7 +56,12 @@ def jmutube_login_required(function, redirect_field_name=REDIRECT_FIELD_NAME):
         if user.is_superuser:
             return True
         group = get_jmutube_facultystaff_group()
-        return (group == None) or (group.user_set.filter(id=user.id).count() == 1)
+        if group and (group.user_set.filter(id=user.id).count() == 1):
+            return True
+        group = get_jmutube_allowed_users_group()
+        if group and (group.user_set.filter(id=user.id).count() == 1):
+            return True
+        return False
     actual_decorator = user_passes_test(
         _is_authenticated,
         redirect_field_name=redirect_field_name
