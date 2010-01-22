@@ -111,6 +111,12 @@ class JMUtubeStorageSystem(LocalFileSystemStorageSystem):
         return record
 
     def sync_files(self, user):
+        # create directories if missing
+        for type in FILE_TYPES.keys():
+            d = self.path(os.path.join(user.username, type))
+            if not os.path.isdir(d):
+                os.makedirs(d)
+        
         def unify_paths(list):
             return map(lambda s: s.replace('\\', '/'), list)
         logging.debug("Synching files for %s" % user.username)
