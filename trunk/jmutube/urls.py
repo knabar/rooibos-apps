@@ -8,6 +8,19 @@ from views import jmutube_login, media_main, migrate_files, media_delete, media_
 
 admin.autodiscover()
 
+
+from util import get_jmutube_storage
+from rooibos.contrib.impersonate import signals
+import logging
+
+def sync_on_impersonate(sender, **kwargs):
+    logging.debug("Running impersonation sync for %s" % kwargs['user'].username)
+    get_jmutube_storage().storage_system.sync_files(kwargs['user'])
+    
+signals.user_impersonated.connect(sync_on_impersonate)
+logging.debug("Connected to impersonation signal (%s)" % signals.user_impersonated)
+
+
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {'template': 'jmutube-home.html'}, name='jmutube-main'),
 
