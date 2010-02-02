@@ -40,38 +40,72 @@ class Job(HourlyJob):
                 files = [f.getAttribute('name') for f in
                          getElement(dom, 'presentation', 'outputFiles', 'fileList').getElementsByTagName('file')]
                 print file
-                outfile = regex.sub('_', os.path.splitext(file)[0])
-                outfile = make_unique(os.path.join(presenter, 'presentations', outfile + '.zip'))
-                outfilename = os.path.basename(outfile)
-                # create zipped version
-                camrec = False
-                zipfilename = os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, outfilename)
-                zip = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
-                for f in files:
-                    zip.write(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, f), f.encode('ascii'))
-                    camrec = camrec or f.endswith('.camrec')
-                zip.write(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, file), file)
-                zip.close()
-                # create folder and move everything over
-                outdir = storage.storage_system.path(outfile + '.content')
-                if not os.path.exists(outdir):
-                    os.mkdir(outdir)
-                for f in files:
-                    move_or_remove(f, settings.JMUTUBE_RELAY_INCOMING_FOLDER, outdir)
-                move_or_remove(file, settings.JMUTUBE_RELAY_INCOMING_FOLDER, outdir)
-                try:
-                    shutil.move(zipfilename, storage.storage_system.path(outfile))
-                except:
-                    print "Cannot move ZIP file %s" % zipfilename
-                    os.remove(zipfilename)
+                
+                if len(files) > 1:
+                    # Handle presentation
+                
+                    outfile = regex.sub('_', os.path.splitext(file)[0])
+                    outfile = make_unique(os.path.join(presenter, 'presentations', outfile + '.zip'))
+                    outfilename = os.path.basename(outfile)
+                    # create zipped version
+                    camrec = False
+                    zipfilename = os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, outfilename)
+                    zip = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
+                    for f in files:
+                        zip.write(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, f), f.encode('ascii'))
+                        camrec = camrec or f.endswith('.camrec')
+                    zip.write(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, file), file)
+                    zip.close()
+                    # create folder and move everything over
+                    outdir = storage.storage_system.path(outfile + '.content')
+                    if not os.path.exists(outdir):
+                        os.mkdir(outdir)
+                    for f in files:
+                        move_or_remove(f, settings.JMUTUBE_RELAY_INCOMING_FOLDER, outdir)
+                    move_or_remove(file, settings.JMUTUBE_RELAY_INCOMING_FOLDER, outdir)
+                    try:
+                        shutil.move(zipfilename, storage.storage_system.path(outfile))
+                    except:
+                        print "Cannot move ZIP file %s" % zipfilename
+                        os.remove(zipfilename)
+    
+                    # create entry point
+                    html = filter(lambda f: f.endswith(".htm") or f.endswith(".html"), os.listdir(outdir))
+                    if len(html) == 1 and not html in ('default.htm', 'default.html', 'index.htm', 'index.html'):
+                        shutil.copy(os.path.join(outdir, html[0]), os.path.join(outdir, 'index.html'))
 
-                # create entry point
-                html = filter(lambda f: f.endswith(".htm") or f.endswith(".html"), os.listdir(outdir))
-                if len(html) == 1 and not html in ('default.htm', 'default.html', 'index.htm', 'index.html'):
-                    shutil.copy(os.path.join(outdir, html[0]), os.path.join(outdir, 'index.html'))
+                    # add file entry
+                    record = storage.storage_system.create_record_for_file(user, outfile, 'presentations')
 
-                # add file entry
-                record = storage.storage_system.create_record_for_file(user, outfile, 'presentations')
+                else:
+                    # Handle single file upload
+
+                    name, ext = os.path.splitext(files[0])
+                    outfile = regex.sub('_', name) + ext
+                    outfile = make_unique(os.path.join(presenter, 'video', outfile))
+                    outfilename = os.path.basename(outfile)
+                    
+                    camrec = outfile.endswith('.camrec')
+
+                    try:
+                        record = storage.storage_system.create_record_for_file(user, outfile, 'video')
+                    except Exception, e:
+                        print "Cannot create record - unsupported file type?", e
+                        continue
+
+                    try:
+                        shutil.move(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, files[0]),
+                                    storage.storage_system.path(outfile))
+                    except Exception, e:
+                        print "Cannot move file %s to %s" % (files[0], outfile), e
+                        continue
+                    
+                    try:
+                        os.remove(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, file))
+                    except Exception, e:
+                        print "Cannot remove file %s" % file, e
+                        continue
+
                 # add tags
                 wrapper = OwnedWrapper.objects.get_for_object(user=user, object=record)
                 Tag.objects.add_tag(wrapper, 'Relay')
