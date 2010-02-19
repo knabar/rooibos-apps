@@ -3,6 +3,8 @@ from django.conf import settings
 import os
 import shutil
 import re
+import time
+import logging
 from datetime import datetime
 from tagging.models import Tag
 from rooibos.util.models import OwnedWrapper
@@ -15,8 +17,15 @@ class Job(HourlyJob):
 
     def execute(self):
         storage = get_jmutube_storage()
+        logging.info('CRASS sorter starting')
         for file in os.listdir(settings.JMUTUBE_CRASS_MISC_FOLDER):
-            print file,
+        
+            age = time.time() - os.path.getmtime(os.path.join(settings.JMUTUBE_CRASS_MISC_FOLDER, file))
+            if age < 600:
+                logging.debug('CRASS skipping file %s with age %s' % (file, age))
+                continue
+                
+            logging.debug('Processing %s' % file)
             match = Job.file_re.match(file)
             if match:
                 dt = datetime(int(match.group('y')), int(match.group('m')), int(match.group('d')),
@@ -24,7 +33,7 @@ class Job(HourlyJob):
                 schedules = Schedule.objects.filter(computer__mac_address__iexact=match.group('mac'),
                                                     start_time__lte=dt, end_time__gte=dt)
                 if not schedules:
-                    print "no schedule found"
+                    logging.debug("no schedule found")
                     continue
                 schedule = schedules[0]
                 title = '%s %s (%s)' % (schedule.computer.building, schedule.computer.room, dt)
@@ -45,8 +54,8 @@ class Job(HourlyJob):
                     Tag.objects.add_tag(wrapper, 'CRASS')
                     Tag.objects.add_tag(wrapper, '"Week %s"' % dt.isocalendar()[1])
                     Tag.objects.add_tag(wrapper, ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][dt.weekday()])
-                    print "-> %s" % newname
+                    logging.debug("-> %s" % newname)
                 else:
-                    print "target file already exists"
+                    logging.debug("target file already exists")
             else:
-                print "invalid file"
+                logging.debug("invalid file")
