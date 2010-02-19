@@ -118,9 +118,11 @@ class JMUtubeStorageSystem(LocalFileSystemStorageSystem):
                 os.makedirs(d)
         
         def unify_paths(list):
-            return map(lambda s: s.replace('\\', '/'), list)
+            return map(lambda s: s.replace('\\', '/').lower(), list)
         logging.debug("Synching files for %s" % user.username)
         media = unify_paths([m.url for m in Media.objects.select_related('record').filter(record__owner=user, storage=get_jmutube_storage())])
+#        for m in media:
+#            logging.info("Found existing media object %s for %s" % (m, user.username))
         for type, extensions in FILE_TYPES.iteritems():
             subdir = os.path.join(user.username, type)
             files = unify_paths(self.list_files(subdir, extensions))

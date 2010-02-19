@@ -9,6 +9,9 @@ import re
 from apps.jmutube.util import make_unique, get_jmutube_storage
 from tagging.models import Tag
 from rooibos.util.models import OwnedWrapper
+import rooibos.contrib.djangologging.middleware # does not get loaded otherwise
+import logging
+import time
 
 class Job(HourlyJob):
     help = "Import relay files"
@@ -23,15 +26,21 @@ class Job(HourlyJob):
 
         def move_or_remove(file, sourcedir, targetdir):
             if os.path.exists(os.path.join(targetdir, file)):
-                print "File %s exists in %s" % (file, targetdir)
+            	logging.debug("Relay: File %s exists in %s" % (file, targetdir))
                 os.remove(os.path.join(sourcedir, file))
             else:
                 shutil.move(os.path.join(sourcedir, file), targetdir)
 
+        logging.info("Relay import starting")
+        
         storage = get_jmutube_storage()
         files = filter(lambda f: f.endswith('.xml'), os.listdir(settings.JMUTUBE_RELAY_INCOMING_FOLDER))
         regex = re.compile('[^0-9a-z]+', flags=re.IGNORECASE)
         for file in files:
+            age = time.time() - os.path.getmtime(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, file))
+            if age < 600:
+                logging.debug('Relay skipping file %s with age %s' % (file, age))
+                continue
             try:
                 dom = parse(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, file))
                 title = getElement(dom, 'presentation', 'title').firstChild.data
@@ -39,9 +48,9 @@ class Job(HourlyJob):
                 user = User.objects.get(username=presenter)
                 files = [f.getAttribute('name') for f in
                          getElement(dom, 'presentation', 'outputFiles', 'fileList').getElementsByTagName('file')]
-                print file
                 
                 if len(files) > 1:
+                    logging.info("Relay importing presentation %s" % file)
                     # Handle presentation
                 
                     outfile = regex.sub('_', os.path.splitext(file)[0])
@@ -66,7 +75,7 @@ class Job(HourlyJob):
                     try:
                         shutil.move(zipfilename, storage.storage_system.path(outfile))
                     except:
-                        print "Cannot move ZIP file %s" % zipfilename
+                        logging.error("Cannot move ZIP file %s" % zipfilename)
                         os.remove(zipfilename)
     
                     # create entry point
@@ -75,9 +84,11 @@ class Job(HourlyJob):
                         shutil.copy(os.path.join(outdir, html[0]), os.path.join(outdir, 'index.html'))
 
                     # add file entry
+                    logging.info('Relay creating record for %s: %s (presentations)' % (user, outfile))
                     record = storage.storage_system.create_record_for_file(user, outfile, 'presentations')
 
                 else:
+                    logging.info("Relay importing single file %s" % file)
                     # Handle single file upload
 
                     name, ext = os.path.splitext(files[0])
@@ -88,22 +99,24 @@ class Job(HourlyJob):
                     camrec = outfile.endswith('.camrec')
 
                     try:
+                    	logging.info('Relay creating record for %s: %s (video)' % (user, outfile))
                         record = storage.storage_system.create_record_for_file(user, outfile, 'video')
                     except Exception, e:
-                        print "Cannot create record - unsupported file type?", e
+                        logging.error("Cannot create record - unsupported file type? [%s]" % e)
                         continue
 
                     try:
                         shutil.move(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, files[0]),
                                     storage.storage_system.path(outfile))
                     except Exception, e:
-                        print "Cannot move file %s to %s" % (files[0], outfile), e
+                        logging.error("Cannot move file %s to %s [%s]" % (files[0], outfile, e))
+                        record.delete()
                         continue
                     
                     try:
                         os.remove(os.path.join(settings.JMUTUBE_RELAY_INCOMING_FOLDER, file))
                     except Exception, e:
-                        print "Cannot remove file %s" % file, e
+                        logging.error("Cannot remove file %s [%s]" % (file, e))
                         continue
 
                 # add tags
@@ -111,6 +124,5 @@ class Job(HourlyJob):
                 Tag.objects.add_tag(wrapper, 'Relay')
                 if camrec:
                     Tag.objects.add_tag(wrapper, 'CamRec')
-                print "done"
             except Exception, e:
-                print e
+                logging.error(e)
