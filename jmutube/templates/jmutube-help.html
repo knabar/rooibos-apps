@@ -4,34 +4,79 @@
 
 <h3>Help</h3>
 
-<p>You can always contact Grover Saunders at 540-568-3572 or <a href="mailto:saundebn@jmu.edu" target="_blank">saundebn@jmu.edu</a> for questions, feedback, and help using the site. In addition, we've begun producing a series of screencasts to give you an overview of the system and its features.</p>
+<p>We've produced a <a href="http://jmutube.cit.jmu.edu/content/cit/playlist/1247/play/">short video tutorial</a> that covers the basics of managing your videos and making playlists. You can always contact <a href="http://cit.jmu.edu/profile/grover_saunders/" target="_blank">Grover Saunders</a> for questions, feedback, and help using the site.</p>
 
-<p align="center">
+<h3>What Formats Are Supported?</h3>
 
-<h3>JMUtube Video Basics</h3>
+<ul>
+	<li>
+	<strong>Video:</strong>
+	<ul>
+		<li>.mp4 and .mov files using the H.264 and AAC codecs</li>
+		<li>.flv files using the Sorenson Spark or On2 VP6 codec</li>
+	</ul>
+	</li>
+	<li>
+	<strong>Audio:</strong>
+	<ul>
+		<li>.mp3 files using a standardized sample rate</li>
+		<li>AAC audio files with an .m4a extension</li>
+	</ul>
+	</li>	
+	<li>
+	<strong>Presentations:</strong>
+	<ul>
+		<li>.zip files produced by Camtasia, Adobe Presenter, or Adobe Captivate.</li>
+		<li>Any zipped website with a file called index.html in the root directory.</li>
+	</ul>
+	</li>
+</ul>
 
-<div style="margin: 0px; padding: 0px; overflow: hidden; width: 480px; height: 400px;">
-<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,115,0" width="480" height="400" id="jmutube" align="middle">
-<param name="movie" value="http://jmutube.cit.jmu.edu/static/player/jmutube.swf" />
-<param name="allowFullScreen" value="true" />
-<param name="allScriptAccess" value="sameDomain" />
-<param name="quality" value="high" />
-<param name="scale" value="exactfit" />
-<param name="loop" value="false" />
-<param name="FlashVars" value="rssfeed=http://jmutube.cit.jmu.edu/content/cit/playlist/414/rss?player=jmutube" />
-<object data="http://jmutube.cit.jmu.edu/static/player/jmutube.swf" height="400" type="application/x-shockwave-flash" width="480">
-<param name="movie" value="http://jmutube.cit.jmu.edu/static/player/jmutube.swf" />
-<param name="allowFullScreen" value="true" />
-<param name="allScriptAccess" value="sameDomain" />
-<param name="quality" value="high" />
-<param name="scale" value="exactfit" />
-<param name="loop" value="false" />
-<param name="FlashVars" value="rssfeed=http://jmutube.cit.jmu.edu/content/cit/playlist/414/rss?player=jmutube" />
-</object>
-</object>
-</div>
+
+<h3>Can You Help Me Convert My Video or Audio?</h3>
+
+<p>Absolutely. The best option for most users will be to take advantage of the <a href="http://cit.jmu.edu/support_services/audio_video/#transcode" target="_blank">CIT's drop-off transcoding services</a>. You can take your video in just about any video format to either CIT WalkIn location and have your content converted to the proper format and uploaded directly into your JMUtube account.</p>
+
+<p>More info on this and all of our A/V services can be found on the <a href="http://cit.jmu.edu/support_services/audio_video/" target="_blank">CIT website</a>.</p>
 
 
-</p>
+<h3>Can I Encode The Video Myself?</h3>
+
+
+<p>Encoding video is a bit of a black art, but it is absolutely possible for you to encode your own video. Here are some general tips to help you create web-suitable video (and audio actually).</p>
+
+<ul>
+	<li>Overall file size doesn't matter much. Only the bitrate, which is the size <em>per second</em>.</li>
+	<li>Most video is composed of both audio and video, so you'll need watch your settings for both when encoding.</li>
+	<li>Video encoding is a balance between bitrates and quality. Try to keep your total bitrate between 500kbit/sec and 1000kbit/sec at most. Lower bitrates = smoother playback.</li>
+	<li>Audio (by itself or with video) must use a 22.05kHz or 44.1kHz sample rate to play in Flash (and therefore JMUtube). Luckily, one of these is usually the default, but many higher end video cameras use 48kHz audio.</li>
+	<li>The .m4v and .mp4 file formats are the same. Just changing the extension of a .m4v file to .mp4 will make it compatible with JMUtube.</li>
+
+</ul>
+
+<p>We can highly recommend the GUI version of <a href="http://handbrake.fr" target="_blank">Handbrake</a> as a free and excellent tool for encoding your video into a web-suitable format. We've also created some Handbrake presets specifically for JMUtube.</p>
+
+<ul>
+<li><a href="http://jmutube.cit.jmu.edu/static/handbrake_presets/jmutube_standard.plist">JMUtube Standard</a></li>
+<li><a href="http://jmutube.cit.jmu.edu/static/handbrake_presets/jmutube_widescreen.plist">JMUtube Widescreen</a></li>
+</ul>
+
+<p>These presets are .plist files. Once you've downloaded and installed Handbrake, download these two files and save them to your computer. Then, in Handbrake, click on Presets->Import to import the presets. They should now appear in the presets list on the right.</p>
+
+
+<h3>Is JMUtube Secure?</h3>
+
+<p>The short answer is no. JMUtube is not secure.</p>
+
+<p>The longer answer requires us to define what we mean by "secure." For the purposes of this discussion I'm going to make a distinction between private and secure.</p>
+
+<p><strong>Private</strong> means that the content is reasonably obscured from being found by the general public. It's very similar to having an unlisted phone number. Someone can't just decided they want to call you and look you up by calling 411. You have to give your unlisted number directly to anyone who wants to call you. That being said, it's certainly possible that someone might guess your number (such as an auto-dialer) and anyone who has your number can pass it to someone you'd rather they didn't. This is how JMUtube is designed to work. JMUtube has no browsable interface or search feature that would allow users to easily find videos, so unless you give a user the address of your video, there's no easy way for them to find it. The advantage of this is that it makes it very easy to distribute your video; just give them the address or embed it in a web page and they can see it. But again, it also very easy for that address to be passed to others outside your original group.</p>
+
+<p><strong>Secure</strong> (for the purposes of this discussion) would mean that only someone who you've authorized to view the content will be able to view it, end of story. The user would have to log-in and prove who they are in order to view the video, not matter what the context. If the address were passed to another user, it would not allow them to see the content. Of course, this would require that someone (i.e. you) has to maintain a list of who is allowed to view each video and would limit your options for distributing and embedding the video.</p>
+
+<p>So JMUtube is private, but not secure for the time being. We are constantly evaluating the balance between ease of use and security and may choose to make security improvements to JMUtube in the future. Regardless, there are many perils in putting AV content on the web, from copyright to privacy and we want you to be able to make informed decisions about the content you are uploading. If you have questions or comments about JMUtube or any content you're considering uploading, do not hesitate to <a href="mailto:saundebn@jmu.edu">get in touch</a>.</p>
+
+
+
 
 {% endblock %}
