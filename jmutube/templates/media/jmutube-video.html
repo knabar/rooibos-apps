@@ -151,7 +151,7 @@
                         <span class="filetitle" id="title_{{ file.id }}">{{ file.title|escape }}</span></div>
                         <a href="{% url jmutube-media-delete type, file.id, file.name %}">Delete</a>
                         <a href="{% url jmutube-media-rename type, file.id, file.name %}">Rename</a>
-                        <a href="javascript:void(0)" onclick="window.open('{% url jmutube-static 'player/jmutube_popout_viewer.html' %}?listidx=0&rssfeed={% url jmutube-single-file-rss-feed user.username, file.id, file.name %}&timestamp=0&isplaying=true','jmutubepopout','height=408,width=488,toolbar=no,scrollbars=no,directories=no,location=yes,status=no,menubar=no,resizeable=no');false;">Preview</a>
+                        <a href="javascript:void(0)" onclick="show_preview_dialog('{% url jmutube-static 'player/jmutube_popout_viewer.html' %}?listidx=0&rssfeed={% url jmutube-single-file-rss-feed user.username, file.id, file.name %}&timestamp=0&isplaying=true');">Preview</a>
                         <a href="{{ file.media.get_absolute_url }}">Download</a>
                         <a href="javascript:void(0)" onclick="$('#playlistitems').append(new_playlist_item_from_id('{{ file.id }}'))">Add to Playlist</a>
                         <div class="tags-line">
@@ -175,6 +175,9 @@
       <div><label>HTML page:</label><a href="" id="downloadhtmllink" target="_blank">Download HTML page with embedded code</a></div>
 </div>
 
+<div id="previewdialog">
+        <iframe src="about:blank" width="480" height="400" frameborder="0"></iframe>
+</div>
 
 
 <script type="text/javascript">
@@ -316,6 +319,12 @@ function show_playlist_dialog() {
     return false;
 }
 
+function show_preview_dialog(url) {
+    $('#previewdialog').dialog('open');
+    $('#previewdialog iframe').attr('src', url);
+    return false;
+}
+
 function save_playlist_to_cookie()
 {
         var cookie = (playlist_modified ? "1" : "0") + "," +
@@ -374,6 +383,17 @@ $(window).bind("load", function() {
                 buttons: { 'Close': function() { $(this).dialog('close'); } },
                 height: 480,
                 width: 600
+        });
+        $('#previewdialog').dialog({
+                modal: true,
+                resizable: false,
+                autoOpen: false,
+                title: "Preview",
+                overlay: { opacity: 0.5, background: 'black' },
+                buttons: { 'Close': function() { $(this).dialog('close'); } },
+                close: function() { $("#previewdialog iframe").attr("src", "about:blank"); },
+                height: 530,
+                width: 540
         });
         restore_playlist_from_cookie();
 
