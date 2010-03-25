@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.core.cache import cache
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect, HttpResponseForbidden
 from django.core.files.uploadhandler import FileUploadHandler
 from django.core.urlresolvers import reverse
 from django.utils.http import urlencode
@@ -184,23 +184,33 @@ def thumbnail(request, username, id, name):
 def upload_file(request):
 
     class UploadFileForm(forms.Form):
-        file = forms.FileField()
+        file = forms.FileField(label="Upload new file")
+        tag = forms.CharField(label="Tag uploads with:", required=False)
 
     if request.method == 'POST':
-        request.upload_handlers.insert(0, UploadProgressCachedHandler(request, 1024 ** 3)) # limit upload to 1 GB
+#        request.upload_handlers.insert(0, UploadProgressCachedHandler(request, 1024 ** 3)) # limit upload to 1 GB
         uploadform = UploadFileForm(request.POST, request.FILES)
         if uploadform.is_valid():
             file = request.FILES['file']
             type = determine_type(file.name)
+            tag = uploadform.cleaned_data['tag']
             if type:
                 storage = get_jmutube_storage()
                 base, ext = os.path.splitext(file.name)
                 name = make_unique(os.path.join(request.user.username, type, re.sub(r'[^\w]+', '_', base) + ext.lower()))
                 storage.save_file(name, file)
-                storage.storage_system.create_record_for_file(request.user, name, type)
+                record = storage.storage_system.create_record_for_file(request.user, name, type)
+                wrapper = OwnedWrapper.objects.get_for_object(user=record.owner, object=record)
+                Tag.objects.add_tag(wrapper, '"' + tag + '"')
+
+                if request.POST.get('swfupload') == 'true':
+                    return HttpResponse(content='ok', mimetype='text/plain')
 
                 return HttpResponseRedirect(reverse('jmutube-media', args=[type]))
             else:
+                if request.POST.get('swfupload') == 'true':
+                    return HttpResponseForbidden(content='invalid type', mimetype='text/plain')
+                
                 request.user.message_set.create(message="The file you uploaded does not have a valid extension." +
                                                 "Valid files are %s." % (','.join(filter(None, [','.join(x) for x in FILE_TYPES.values()]))))
                 return HttpResponseRedirect(reverse('jmutube-upload'))
@@ -208,5 +218,5 @@ def upload_file(request):
         uploadform = UploadFileForm()
 
     return render_to_response('jmutube-upload.html',
-                              { 'uploadform': uploadform, },
+                              { 'form': uploadform, },
                               context_instance=RequestContext(request))
