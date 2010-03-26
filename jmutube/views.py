@@ -12,7 +12,7 @@ import os
 import re
 import fnmatch
 import shutil
-from util import get_jmutube_storage, jmutube_login_required, all_files, make_unique
+from util import get_jmutube_storage, get_jmutube_uploaders_users_group, jmutube_login_required, all_files, make_unique
 from jmutubestorage import determine_type, FILE_TYPES
 from tagging.models import Tag, TaggedItem
 from rooibos.data.models import Record, Field, FieldValue
@@ -183,25 +183,38 @@ def thumbnail(request, username, id, name):
 @jmutube_login_required
 def upload_file(request):
 
+    uploader = request.user.is_superuser or request.user.groups.filter(id=get_jmutube_uploaders_users_group().id).count() > 0
+    if uploader:
+        available_users = User.objects.filter(is_active=True).order_by('username').values_list('id', 'username')
+    else:
+        available_users = [(request.user.id, request.user.username)]
+
     class UploadFileForm(forms.Form):
         file = forms.FileField(label="Upload new file")
         tag = forms.CharField(label="Tag uploads with:", required=False)
+        for_user = forms.ChoiceField(label="Target user:", choices=((i, u) for i, u in available_users), required=False)
+
 
     if request.method == 'POST':
 #        request.upload_handlers.insert(0, UploadProgressCachedHandler(request, 1024 ** 3)) # limit upload to 1 GB
         uploadform = UploadFileForm(request.POST, request.FILES)
         if uploadform.is_valid():
+            if uploader and int(uploadform.cleaned_data.get('for_user', 0)) in (i for i, u in available_users):
+                target_user = User.objects.get(id=uploadform.cleaned_data['for_user'])
+            else:
+                target_user = request.user
             file = request.FILES['file']
             type = determine_type(file.name)
-            tag = uploadform.cleaned_data['tag']
+            tag = uploadform.cleaned_data.get('tag')
             if type:
                 storage = get_jmutube_storage()
                 base, ext = os.path.splitext(file.name)
-                name = make_unique(os.path.join(request.user.username, type, re.sub(r'[^\w]+', '_', base) + ext.lower()))
+                name = make_unique(os.path.join(target_user.username, type, re.sub(r'[^\w]+', '_', base) + ext.lower()))
                 storage.save_file(name, file)
-                record = storage.storage_system.create_record_for_file(request.user, name, type)
-                wrapper = OwnedWrapper.objects.get_for_object(user=record.owner, object=record)
-                Tag.objects.add_tag(wrapper, '"' + tag + '"')
+                record = storage.storage_system.create_record_for_file(target_user, name, type)
+                if tag:
+                    wrapper = OwnedWrapper.objects.get_for_object(user=record.owner, object=record)
+                    Tag.objects.add_tag(wrapper, '"' + tag + '"')
 
                 if request.POST.get('swfupload') == 'true':
                     return HttpResponse(content='ok', mimetype='text/plain')
@@ -215,8 +228,10 @@ def upload_file(request):
                                                 "Valid files are %s." % (','.join(filter(None, [','.join(x) for x in FILE_TYPES.values()]))))
                 return HttpResponseRedirect(reverse('jmutube-upload'))
     else:
-        uploadform = UploadFileForm()
+        uploadform = UploadFileForm(initial={'for_user': request.user.id})
 
     return render_to_response('jmutube-upload.html',
-                              { 'form': uploadform, },
+                              { 'form': uploadform,
+                                'uploader': uploader,
+                                },
                               context_instance=RequestContext(request))
