@@ -54,6 +54,7 @@
 <form method="post" action="" enctype="multipart/form-data" id="upload-control">
 <span id="html-upload-control">{{ form.file.label }} {{ form.file }}<br /></span>
 {{ form.tag.label }} {{ form.tag }}<br />
+<span id="for_user_span">{{ form.for_user.label }} {{ form.for_user }}<br /></span>
 <br /><input type="submit" name="SubmitButton" value="Submit" id="upload-button" />
 </form>
 
@@ -63,6 +64,9 @@
 
 $(document).ready(function() {
     $("#html-upload-control").hide();
+    {% if not uploader %}
+    $("#for_user_span").hide();
+    {% endif %}
     $('#upload-control').swfupload({
 		upload_url: "{{ request.get_full_path }}",
 		file_size_limit : "512000",
@@ -101,6 +105,9 @@ $(document).ready(function() {
 		.bind('uploadStart', function(event, file){
                         $(this).swfupload('removePostParam', '{{ form.tag.name }}');
                         $(this).swfupload('addPostParam', '{{ form.tag.name }}', $("#{{ form.tag.auto_id }}").val());
+
+                        $(this).swfupload('removePostParam', '{{ form.for_user.name }}');
+                        $(this).swfupload('addPostParam', '{{ form.for_user.name }}', $("#{{ form.for_user.auto_id }}").val());
                     
                         $('#upload-progress').remove();
                         $('#upload-queue-' + file.id).after($("<div id='upload-progress'><div><"+"/div><"+"/div>"));

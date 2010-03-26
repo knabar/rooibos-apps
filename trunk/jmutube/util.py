@@ -37,6 +37,11 @@ def get_jmutube_allowed_users_group():
     return group
 
 
+def get_jmutube_uploaders_users_group():
+    group, created = Group.objects.get_or_create(name='jmutube_uploaders')
+    return group
+
+
 def get_jmutube_facultystaff_group():
     if not hasattr(settings, 'JMUTUBE_USER_RESTRICTION'):
         return None
