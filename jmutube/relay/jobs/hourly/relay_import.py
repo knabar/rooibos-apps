@@ -26,7 +26,7 @@ class Job(HourlyJob):
 
         def move_or_remove(file, sourcedir, targetdir):
             if os.path.exists(os.path.join(targetdir, file)):
-            	logging.debug("Relay: File %s exists in %s" % (file, targetdir))
+                logging.debug("Relay: File %s exists in %s" % (file, targetdir))
                 os.remove(os.path.join(sourcedir, file))
             else:
                 shutil.move(os.path.join(sourcedir, file), targetdir)
@@ -99,7 +99,7 @@ class Job(HourlyJob):
                     camrec = outfile.endswith('.camrec')
 
                     try:
-                    	logging.info('Relay creating record for %s: %s (video)' % (user, outfile))
+                        logging.info('Relay creating record for %s: %s (video)' % (user, outfile))
                         record = storage.storage_system.create_record_for_file(user, outfile, 'video')
                     except Exception, e:
                         logging.error("Cannot create record - unsupported file type? [%s]" % e)
