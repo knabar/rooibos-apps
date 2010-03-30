@@ -18,6 +18,9 @@
         background-color: #F7F7F7;
         width: 250px;
         padding: 2px;
+}
+
+.supported {
         cursor: move;
 }
 
@@ -147,13 +150,18 @@
                     <img src="{% url jmutube-thumbnail user.username, file.id, file.name %}?square" height="50" />
                 </td>
                 <td>
-                    <div class="file" id="file_{{ file.id }}">
-                        <span class="filetitle" id="title_{{ file.id }}">{{ file.title|escape }}</span></div>
+                    <div class="file{% if file.supported %} supported{% endif %}" id="file_{{ file.id }}">
+                        <span class="filetitle" id="title_{{ file.id }}">{{ file.title|escape }}</span>
+                    </div>
                         <a href="{% url jmutube-media-delete type, file.id, file.name %}">Delete</a>
                         <a href="{% url jmutube-media-rename type, file.id, file.name %}">Rename</a>
+                        {% if file.supported %}
                         <a href="javascript:void(0)" onclick="show_preview_dialog('{% url jmutube-static 'player/jmutube_popout_viewer.html' %}?listidx=0&rssfeed={% url jmutube-single-file-rss-feed user.username, file.id, file.name %}&timestamp=0&isplaying=true');">Preview</a>
+                        {% endif %}
                         <a href="{{ file.media.get_absolute_url }}">Download</a>
+                        {% if file.supported %}
                         <a href="javascript:void(0)" onclick="$('#playlistitems').append(new_playlist_item_from_id('{{ file.id }}'))">Add to Playlist</a>
+                        {% endif %}
                         <div class="tags-line">
                         {% tags_for_object file.ownedwrapper as file_tags %}
                         {% for tag in file_tags %}
@@ -235,7 +243,7 @@ function new_playlist_item(id, title, deliveryoptions, delivery, mark_modified) 
         if (deliveryoptions == 'B') i.append(" ").append(dc);
 
         c.append(i);
-        c.droppable({accept: ".file", drop: function(ev,ui){ $(this).before(drop_new_playlist_item(ui)); }});
+        c.droppable({accept: ".file.supported", drop: function(ev,ui){ $(this).before(drop_new_playlist_item(ui)); }});
         return c;
 }
 
@@ -371,7 +379,7 @@ $(window).bind("load", function() {
 
         update_playlists();
         $("#playlistitems").sortable({update: function(){ set_playlist_modified(true); }});
-        $(".file").draggable({helper: 'clone'});
+        $(".file.supported").draggable({helper: 'clone'});
         $(".playlistitem").droppable({accept: ".file", drop: function(ev,ui){ $(this).before(new_playlist_item(ui)); }});
         $("#newplaylistitem").droppable({accept: ".file",  drop: function(ev,ui){ $("#playlistitems").append(drop_new_playlist_item(ui)); }});
         $('#getlinkdialog').dialog({

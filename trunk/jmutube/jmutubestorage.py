@@ -12,7 +12,7 @@ import logging
 
 
 FILE_TYPES = {
-    'video': ('*.mp4', '*.flv', '*.mov'),
+    'video': ('*.mp4', '*.flv', '*.mov', '*.camrec'),
     'audio': ('*.mp3', '*.m4a'),
     'presentations': ('*.zip',),
     'crass': (),
@@ -27,6 +27,7 @@ MIME_TYPES = {
     '.mp3': 'audio/mpeg',
     '.m4a': 'audio/mp4a-latm',
     '.zip': 'application/zip',
+    '.camrec': 'application/octet-stream',
 }
 
 

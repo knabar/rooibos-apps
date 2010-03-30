@@ -48,6 +48,7 @@ class RecordWrapper(object):
         else:
             self.media = None
             self.url = None
+        self.supported = self.media and not self.media.url.endswith('.camrec')
 
 
 @jmutube_login_required
@@ -77,7 +78,7 @@ def media_main(request, type):
         ids = list(TaggedItem.objects.get_by_model(qs, '"' + '","'.join(selected_tags) + '"').values_list('object_id', flat=True))
         records = Record.objects.filter(owner=request.user, id__in=ids)
 
-    files = sorted(map(RecordWrapper, records), key=lambda r: r.title.lower())
+    files = sorted(map(RecordWrapper, records), key=lambda r: r.title.lower() if r.title else '')
 
     all_tags = filter(lambda t: t != 'JMUtube', (t.name for t in Tag.objects.usage_for_model(OwnedWrapper,
                     filters=dict(user=request.user,
