@@ -1,0 +1,44 @@
+{% extends "snp.html" %}
+
+{% block content %}	  
+	  
+      <!-- Bread Crumbs  -->     
+      <p style="margin-top:0;">
+      <a href="http://www.lib.jmu.edu/special/research/oralhistoryhome.aspx">Oral Histories </a> 
+      &gt; <a href="{% url snp-main %}"> SNP Collection</a>
+      </p>
+      
+      <h2 align="center">Shenandoah National Park Oral History Collection<br>
+
+      </h2>
+	  
+
+
+	  <div id="float_leftOralHistories">
+<!-- Description Field (520)  -->
+      The Shenandoah National Park Oral History Collection, SdArch SNP, (formerly SC# 4030), consists of 135 interviews of people who were living in the Blue Ridge Mountains of Virginia prior to the creation of the Shenandoah National Park. Most of the interviewees resided on land that was claimed by eminent domain by the commonwealth of Virginia and subsequently turned over to the US government in the 1930s.
+The collection is comprised of 6 Hollinger boxes and 2 1/5 media cabinet drawers of audio, transcripts, and images pertaining to interviews conducted primarily by Dorothy Noble Smith as part of her research for <em><a href="http://leo.jmu.edu/record=b1020471~S0" target="_blank">Recollections:&nbsp; The People of the Blue Ridge Remember</a></em>.</p>
+<p>Topics discussed by interviewees include mountain folklife, music, food preservation, traditional medicine, agriculture and harvesting, bark peeling, moonshining, chores and family life, and schooling with additional references to the Civilian Conservation Corp, the New Deal, and residents' feelings towards the creation of the Shenandoah National Park.
+      </div>
+      
+      <div id="float_rightOralHistories">
+<!-- Image Place Holder (unsure what will be used)  -->
+
+      <img src="https://www.lib.jmu.edu/special/research/images/oralhistory.JPG" alt="Oral History Montage">
+      </div>
+      
+       <div style="clear:both;"><br /></div>
+      
+<!-- Search Box  -->
+<form name="input" action="{% url snp-search %}" method="get" style="text-align:center">
+<input type="text" name="q" size="50" />
+<input type="submit" value="Submit" />
+</form>
+
+      <p align="center">
+      <a href="{% url snp-browse %}">Browse the Collection Website | </a>
+
+      <a href="http://www.lib.jmu.edu/special/oralhistory/SdArchSNP.aspx" target="_blank">See the Finding Aid </a>
+      </p>
+ 
+{% endblock %}

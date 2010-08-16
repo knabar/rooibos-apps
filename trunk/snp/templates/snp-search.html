@@ -1,0 +1,61 @@
+{% extends "snp.html" %}
+
+{% block content %}	  
+	  
+	 
+<!-- Bread Crumbs  -->     
+      <p style="margin-top:0;">
+      <a href="http://www.lib.jmu.edu/special/research/oralhistoryhome.aspx">Oral Histories </a> 
+      &gt; <a href="{% url snp-main %}"> SNP Collection</a>
+      &gt; <a href="{% url snp-search %}"> Search Results</a>
+
+      </p>
+      
+      <h2 align="center">Shenandoah National Park Oral History Collection<br>
+      </h2>
+
+<!-- Search Box  -->
+<form name="input" action="{% url snp-search %}" method="get" style="text-align:center">
+<input type="text" name="q" size="50" value="{{ query }}" />
+<input type="submit" value="Submit" />
+</form>
+
+<blockquote>
+
+  <p><strong>Search Results</strong></p>
+
+  <p>Items marked<span id="restrictedResults"> R</span> are restricted to visitors to Special Collections.</p>
+ 
+ <p>
+ 
+ {% for result in results %}
+ 
+ <div class="topResults">
+ <!-- Interviewee [100], Interview Number [440], Publisher Date [260?]  -->
+<strong> <a href="{% url snp-interview result.interview_number %}">{{ result.interviewee }}</a></strong> ({{ result.interview_number }}) <br />
+
+{{ result.location_date }}  <br />
+</div>
+<!-- Description [520] (first 40 words?), Interviewer [700_ivr], Transcriber [700_trc]  -->
+{{ result.description|truncatewords:40 }} <br />
+
+Interviewer/Transcriber: {{ result.interviewer_transcriber }} <br />
+
+<br />
+
+{% endfor %}
+
+</p>
+ 
+{% if prev_page %}
+ <div>
+  <p class="alignleft"><a href="{% url snp-search %}?q={{ query|urlencode }}&p={{ prev_page }}"> &lt;&lt; Previous </a> </p>
+  <p class="alignright"><a href="{% url snp-search %}?q={{ query|urlencode }}&p={{ next_page }}"> Next  &gt;&gt; </a></p></p>
+</div>
+ {% endif %}
+ 
+  <div style="clear:both;"></div>
+
+  </blockquote>     
+
+{% endblock %}

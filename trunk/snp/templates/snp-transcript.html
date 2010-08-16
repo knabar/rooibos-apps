@@ -1,0 +1,24 @@
+{% extends "snp.html" %}
+{% load data %}
+
+{% block content %}	  
+
+<!-- Bread Crumbs  -->     
+      <p style="margin-top:0;">
+      <a href="http://www.lib.jmu.edu/special/research/oralhistoryhome.aspx">Oral Histories </a> 
+      &gt; <a href="{% url snp-main %}"> SNP Collection</a>
+      &gt; <a href=".">{{ record.title }}</a>
+
+      </p>
+      
+       <h2 align="center" style="margin-bottom: 0;">Shenandoah National Park Oral History Collection<br></h2>
+       <h3 align="center" style="margin-top:0">{{ record.title }} </h3>
+       
+      <blockquote>
+
+
+
+        
+</blockquote>    
+
+{% endblock %}
