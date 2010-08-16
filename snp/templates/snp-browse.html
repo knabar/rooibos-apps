@@ -1,0 +1,117 @@
+{% extends "snp.html" %}
+
+{% block content %}	  
+
+
+     <!-- Bread Crumbs  -->     
+      <p style="margin-top:0;">
+      <a href="http://www.lib.jmu.edu/special/research/oralhistoryhome.aspx">Oral Histories </a> 
+      &gt; <a href="{% url snp-main %}"> SNP Collection</a>
+      &gt; <a href="{% url snp-browse %}"> Browse</a>
+
+      </p>
+	 
+     <h2 align="center" style="margin-bottom: 0;">Shenandoah National Park Oral History Collection<br></h2>
+     <h3 align="center" style="margin-top:0">Browse the Collection Website </h3>
+     
+      <div id="float_leftOralHistories">
+<!-- Description Field (520)  -->
+
+      Collections marked <span id="restrictedResults">R</span> are restricted to visitors to Special Collections.
+      
+      <p> <button id="expand">Expand All</button> | 
+      <button id="contract">Contract All</button>  </p>
+
+      
+<p class='collapsible'><strong>Interviewee <span>-</span> </strong></p>
+
+<table cellspacing="0" cellpadding="0">
+{% for r in interviewees %}
+    <tr>
+      <td> <a href="{% ifequal r.num_records 1 %}{% url snp-interview r.interview_number %}{% else %}{% url snp-search %}?f=Interviewee&v={{ r.value|urlencode }}{% endifequal %}">{{ r.value }}</a></td>
+      <td>{% ifequal r.num_records 1 %}{{ r.interview_number }}{% else %}multiple{% endifequal %}</td>
+      </tr>
+{% endfor %}
+</table>
+
+ 
+<p class='collapsible'><strong>Family Names <span>+</span> </strong></p>
+
+<table cellspacing="0" cellpadding="0" style="display: none;">
+{% for r in family_names %}
+    <tr>
+      <td> <a href="{% ifequal r.num_records 1 %}{% url snp-interview r.interview_number %}{% else %}{% url snp-search %}?f=Family+Names&v={{ r.value|urlencode }}{% endifequal %}">{{ r.value }}</a></td>
+      <td>{% ifequal r.num_records 1 %}{{ r.interview_number }}{% else %}multiple{% endifequal %}</td>
+      </tr>
+{% endfor %}
+</table>
+
+
+<p class='collapsible'><strong>Personal Names <span>+</span> </strong></p>
+
+<table cellspacing="0" cellpadding="0" style="display: none;">
+{% for r in personal_names %}
+    <tr>
+      <td> <a href="{% ifequal r.num_records 1 %}{% url snp-interview r.interview_number %}{% else %}{% url snp-search %}?f=Personal+Names&v={{ r.value|urlencode }}{% endifequal %}">{{ r.value }}</a></td>
+      <td>{% ifequal r.num_records 1 %}{{ r.interview_number }}{% else %}multiple{% endifequal %}</td>
+      </tr>
+{% endfor %}
+</table>
+
+
+<p class='collapsible'><strong>Place Names <span>+</span> </strong></p>
+
+<table cellspacing="0" cellpadding="0" style="display: none;">
+{% for r in place_names %}
+    <tr>
+      <td> <a href="{% ifequal r.num_records 1 %}{% url snp-interview r.interview_number %}{% else %}{% url snp-search %}?f=Place+Names&v={{ r.value|urlencode }}{% endifequal %}">{{ r.value }}</a></td>
+      <td>{% ifequal r.num_records 1 %}{{ r.interview_number }}{% else %}multiple{% endifequal %}</td>
+      </tr>
+{% endfor %}
+</table>
+
+
+<p class='collapsible'><strong>Subjects <span>+</span> </strong></p>
+
+<table cellspacing="0" cellpadding="0" style="display: none;">
+{% for r in subjects %}
+    <tr>
+      <td> <a href="{% ifequal r.num_records 1 %}{% url snp-interview r.interview_number %}{% else %}{% url snp-search %}?f=Subject&v={{ r.value|urlencode }}{% endifequal %}">{{ r.value }}</a></td>
+      <td>{% ifequal r.num_records 1 %}{{ r.interview_number }}{% else %}multiple{% endifequal %}</td>
+      </tr>
+{% endfor %}
+</table>
+
+      </div>
+      
+      <div id="float_rightOralHistories">
+<!-- Image Place Holder (unsure what will be used)  -->
+
+      <img src="https://www.lib.jmu.edu/special/research/images/oralhistory.JPG" alt="Oral History Montage">
+      </div>
+      
+       <div style="clear:both;"><br /></div>
+      
+      
+      
+<script type='text/javascript'>
+
+$(document).ready(function() {
+    $('.collapsible').click(function () {
+        $(this).next('table').toggle(300);
+        s = $("strong span", this);
+        s.text(s.text() == '+' ? '-' : '+');
+    });
+    $('#expand').click(function() {
+        $('.collapsible').next('table').show();
+        $('.collapsible strong span').text('-');
+    });
+    $('#contract').click(function() {
+        $('.collapsible').next('table').hide();
+        $('.collapsible strong span').text('+');
+    });
+});
+
+</script>
+
+{% endblock %}
