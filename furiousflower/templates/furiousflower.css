@@ -1,0 +1,155 @@
+
+h1 {
+    font-size: 2em;
+}
+
+body.master {
+    background-color: rgb(229, 225, 214);
+    min-width: 970px;
+    font-family: "Segoe UI", Calibri, "Myriad Pro", Tahoma, Helvetica, Arial, sans-serif;
+    padding-bottom: 80px;
+}        
+
+
+#content-wrapper {
+    margin: 0 20px;
+    border: solid thin rgb(201, 198, 188);
+    border-top: none;
+    background-color: white;
+}
+
+#content {
+    padding: 85px 20px 15px 20px;
+    border: solid thin rgb(174, 171, 163);
+    border-top: none;
+    clear: both;
+    color: black;
+    background: url({% url furiousflower-static 'background.png' %}) no-repeat;
+    background-position: right 24px;
+}
+
+
+#topmenu {
+    margin: 0;
+    background-color: rgb( 83,  82,  78);
+    height: 22px;
+    color: white;
+    font-size: 8pt;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+#topmenu ul {
+    padding: 3px 20px;
+    float: right;
+    margin: 0;
+}
+
+#topmenu ul li {
+    float: left;
+    list-style: none;
+    padding: 0 5px;
+    border-left: solid white thin;
+}
+
+#topmenu ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+#topmenu ul li:first-child {
+    border-left: none;
+}
+
+#header-bar {
+    position: absolute;
+    top: 22px;
+    width: 100%;
+    min-width: 970px;
+}
+
+html.js-enabled #header-bar {
+    background-color: rgb( 83,  82,  78);
+}
+
+#header-bar div.spacer {
+    margin: 0 21px;
+    padding: 10px 10px 0 10px;
+    border: solid thin rgb(127, 127, 127);
+    border-bottom: none;
+    background: white url({% url furiousflower-static 'background.png' %}) no-repeat top right;
+}
+
+#header {
+    font-size: 18pt;
+    height: 50px;
+}
+
+
+img {
+    margin: 0;
+    border: 0;
+}
+
+div.record {
+    margin: 20px;
+    border: thin solid grey;
+    background-color: #f7f7f7;
+    width: 40%;
+    float: left;
+    padding: 10px;
+}
+
+div.record img {
+    vertical-align: middle;
+    float: left;
+    margin-right: 10px;
+}
+
+div.record a {
+    text-decoration: none;
+}
+
+
+div.metadata {
+    font-size: smaller;
+    margin: 20px 0;
+}
+
+div.metadata-item {
+}
+
+div.metadata div.label {
+    float: left;
+    width: 180px;
+    font-weight: bold;
+    text-align: right;
+    clear: left;
+    padding: 2px 5px 2px 0;
+    height: 100%;
+}
+
+div.metadata div.value{
+    float: left;
+    width: 480px;
+    padding: 2px 0;
+}
+
+div.metadata-subitem div.label {
+    visibility: hidden;
+}
+
+.altrow {
+    background-color: #F0F0F0;
+}
+
+#footer {
+    margin-top: 40px;
+    font-size: small;
+}
+
+#stats { background-color: #ddd; font-size: 65%; padding: 5px;
+        z-index: 1000; position: absolute; right: 0px; bottom: 0px;
+        -moz-opacity: .7; opacity: .7;}
